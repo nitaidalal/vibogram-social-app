@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+
+@theme {
+  --color-primary: #8B5CF6;
+  --color-accent: #EC4899;
+
+  --color-bg: #0F0F14;
+  --color-surface: #1A1A23; /* cards, modals */
+  --color-surface-hover: #23232E; 
+  --color-border: #2A2A35;
+
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+
+  --color-success: #22C55E;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+}
+
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(to right, #8B5CF6, #EC4899);
+  }
+}
+
+
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+  }
+}
+
