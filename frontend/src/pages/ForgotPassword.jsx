@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ForgotPassword = () => {
     const [step,setStep] = useState(1);
@@ -6,6 +8,45 @@ const ForgotPassword = () => {
     const [otp,setOtp] = useState("");
     const [newPassword,setNewPassword] = useState("");
     const [confirmPassword,setConfirmPassword] = useState("");
+
+
+    const handleSendOtp = async() => {
+      try {
+        setStep(2);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });          
+        
+      } catch (error) {
+        toast.error(error.respons.data.message || "Failed to send Otp");
+      }
+    }
+
+    const handleVerifyOtp = async () => {
+      try {
+        const response =  await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/verify-otp`, {
+          email,
+          otp,
+        });
+        
+        toast.success(response.data.message);
+
+        setStep(3);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Otp verificition error");
+      }
+    }
+
+    const handleResetPassword = async () => {
+      try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,{email, newPassword});
+        toast.success( response.data.message);
+
+        
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Otp verificition error");
+      }
+    }
+    
+
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center py-8">
       <div className="w-[80%] max-w-md rounded-2xl p-8 lg:p-12 bg-slate-800 shadow-2xl">
@@ -35,7 +76,7 @@ const ForgotPassword = () => {
               />
             </div>
             <button
-              onClick={() => setStep(2)}
+              onClick={handleSendOtp}
               className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200"
             >
               Send OTP
@@ -61,7 +102,7 @@ const ForgotPassword = () => {
 
             <button
               type="button"
-              onClick={() => setStep(3)}
+              onClick={handleVerifyOtp}
               className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200"
             >
               Verify OTP
@@ -90,7 +131,9 @@ const ForgotPassword = () => {
               className="px-4 py-3 w-full border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
               placeholder="Confirm new password"
             />
-            <button className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200">
+            <button
+            onClick={handleResetPassword}
+             className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200">
               Reset Password
             </button>
           </div>
