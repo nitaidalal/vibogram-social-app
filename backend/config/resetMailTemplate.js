@@ -62,7 +62,7 @@ export const getResetPasswordOTPTemplate = (otp, username = "User") => {
   
               <tr>
                 <td style="font-size:13px; color:#9CA3AF; text-align:center; padding-bottom:20px;">
-                  This OTP is valid for <strong>10 minutes</strong>.  
+                  This OTP is valid for <strong>5 minutes</strong>.  
                   Do not share it with anyone.
                 </td>
               </tr>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import {ClipLoader} from "react-spinners";
 
 const ForgotPassword = () => {
     const [step,setStep] = useState(1);
@@ -8,15 +9,37 @@ const ForgotPassword = () => {
     const [otp,setOtp] = useState("");
     const [newPassword,setNewPassword] = useState("");
     const [confirmPassword,setConfirmPassword] = useState("");
+    const [loading,setLoading] = useState(false);
+    const [resendTimer, setResendTimer] = useState(0);
+    const [resendLoading, setResendLoading] = useState(false);
 
 
     const handleSendOtp = async() => {
       try {
+        setLoading(true);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });
+        toast.success(response.data.message);
         setStep(2);
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });          
+        setResendTimer(30);
         
       } catch (error) {
-        toast.error(error.respons.data.message || "Failed to send Otp");
+        toast.error(error?.response?.data?.message || "Failed to send Otp");
+      }finally{
+        setLoading(false);
+      }
+    }
+
+    const handleResendOtp = async() => {
+      if(resendTimer > 0) return;
+      try {
+        setResendLoading(true);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });
+        toast.success(response.data.message || 'OTP resent successfully');
+        setResendTimer(30);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Failed to resend OTP");
+      } finally {
+        setResendLoading(false);
       }
     }
 
@@ -37,14 +60,31 @@ const ForgotPassword = () => {
 
     const handleResetPassword = async () => {
       try {
+       
+        if(newPassword !== confirmPassword){
+          return toast.error("Passwords do not match");
+        }
+        setLoading(true);
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,{email, newPassword});
         toast.success( response.data.message);
 
         
       } catch (error) {
         toast.error(error?.response?.data?.message || "Otp verificition error");
+      }finally{
+        setLoading(false);
       }
     }
+
+    useEffect(() => {
+      let interval;
+      if(resendTimer > 0) {
+        interval = setInterval(() => {
+          setResendTimer(prev => prev - 1);
+        }, 1000);
+      }
+      return () => clearInterval(interval);
+    }, [resendTimer]);
     
 
   return (
@@ -77,9 +117,10 @@ const ForgotPassword = () => {
             </div>
             <button
               onClick={handleSendOtp}
+              disabled={loading}
               className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200"
             >
-              Send OTP
+            {loading ? <ClipLoader size={20} color="#ffffff" /> : "Send OTP"}
             </button>
           </div>
         )}
@@ -107,6 +148,26 @@ const ForgotPassword = () => {
             >
               Verify OTP
             </button>
+
+            {/* Resend OTP */}
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+              <span className="text-gray-300">Didn't receive the OTP?</span>
+              <button
+                onClick={handleResendOtp}
+                disabled={resendTimer > 0 || resendLoading}
+                className={`font-medium transition-colors ${
+                  resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-purple-400 hover:text-purple-300'
+                }`}
+              >
+                {resendLoading ? (
+                  <ClipLoader size={14} color="#c084fc" />
+                ) : resendTimer > 0 ? (
+                  `Resend in ${resendTimer}s`
+                ) : (
+                  'Resend OTP'
+                )}
+              </button>
+            </div>
           </div>
         )}
 
@@ -134,7 +195,7 @@ const ForgotPassword = () => {
             <button
             onClick={handleResetPassword}
              className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200">
-              Reset Password
+              {loading ? <ClipLoader size={20} color="#ffffff" /> : "Reset Password"}
             </button>
           </div>
         )}
