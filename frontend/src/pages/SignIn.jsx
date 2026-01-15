@@ -4,10 +4,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -25,7 +27,6 @@ const SignIn = () => {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -37,8 +38,13 @@ const SignIn = () => {
     }
     try {
       setLoading(true);
-      let response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signin`, formData);
+      let response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signin`, formData,{
+        withCredentials: true
+      });
+      // Store only user data, NOT token (token is in httpOnly cookie)
+      dispatch(setUserData(response.data.user));
       toast.success(response.data.message || "Signin successful!");
+      navigate("/");
       console.log("Form submitted:", formData);
     } catch (error) {
       toast.error(error.response.data.message || "Signin failed. Please try again.");

@@ -36,15 +36,27 @@ export const signup = async (req,res) => {
 
         const token = await generateToken(newUser._id);
 
+        // Remove password from response
+        const userResponse = {
+            _id: newUser._id,
+            name: newUser.name,
+            username: newUser.username,
+            email: newUser.email,
+            profileImage: newUser.profileImage,
+            followers: newUser.followers,
+            following: newUser.following,
+            createdAt: newUser.createdAt,
+            updatedAt: newUser.updatedAt
+        };
         
-        res.cookie("token",token,{
-            httpOnly:true,
-            maxAge:5*365*24*60*60*1000, //5 years
-            secure:process.env.NODE_ENV==="production",
-            sameSite:"strict"
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 5 * 365 * 24 * 60 * 60 * 1000, // 5 years
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax"
         })
 
-        res.status(201).json({message:"User created successfully", user:newUser, token});
+        res.status(201).json({message:"User created successfully", user:userResponse, token});
 
     } catch (error) {
         res.status(500).json({message:"Signup failed", error:error.message});
@@ -73,16 +85,29 @@ export const signin = async (req, res) => {
 
     const token = await generateToken(user._id);
 
+    // Remove password from response
+    const userResponse = {
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+        followers: user.followers,
+        following: user.following,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+    };
+
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 5 * 365 * 24 * 60 * 60 * 1000, //5 years
+      maxAge: 5 * 365 * 24 * 60 * 60 * 1000, // 5 years
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax"
     });
 
     res
       .status(201)
-      .json({ message: "User signed in successfully", user: user, token });
+      .json({ message: "User signed in successfully", user: userResponse, token });
   } catch (error) {
     res.status(500).json({ message: "Signin failed", error: error.message });
   }

@@ -1,10 +1,14 @@
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import ForgotPassword from './pages/ForgotPassword'
+import Home from './pages/Home'
+import { useSelector } from 'react-redux'
 
 const App = () => {
+
+  const {userData} = useSelector((state) => state.user);
   return (
     <>
       <Toaster
@@ -64,8 +68,9 @@ const App = () => {
         }}
       />
       <Routes>
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
+        <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
+        <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>

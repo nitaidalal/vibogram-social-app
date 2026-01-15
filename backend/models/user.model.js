@@ -57,7 +57,7 @@ const userSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Story"
     },
-    resetOtp:{
+    resetOtp:{ //for forgot password
         type:String,
         default:""
     },
