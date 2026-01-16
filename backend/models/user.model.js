@@ -23,6 +23,14 @@ const userSchema = new Schema({
         type:String,
         default:""
     },
+    bio:{
+        type:String,
+        default:""
+    },
+    gender:{
+        type:String,
+        enum:["Male","Female"],
+    },
     followers:[
         {
             type:Schema.Types.ObjectId,
