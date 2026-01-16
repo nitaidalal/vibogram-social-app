@@ -17,6 +17,9 @@
   --color-success: #22C55E;
   --color-danger: #EF4444;
   --color-warning: #F59E0B;
+  --color-dark-bg: #0F0F14;
+  --color-dark-text: #E5E5E5; 
+
 }
 
 @layer utilities {

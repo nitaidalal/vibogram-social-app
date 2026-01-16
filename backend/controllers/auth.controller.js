@@ -116,7 +116,14 @@ export const signin = async (req, res) => {
 //signout functionality
 export const signout = (req,res) =>{
     try {
-        res.clearCookie("token");
+        // Clear cookie with same attributes used when setting it so browser removes it correctly
+        res.clearCookie("token", {
+            httpOnly: true,
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax"
+        });
+
         res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
         res.status(500).json({ message: "Signout failed", error: error.message });
