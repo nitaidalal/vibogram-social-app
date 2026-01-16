@@ -12,30 +12,34 @@ const loadUserFromLocalStorage = () => {
 };
 
 const userSlice = createSlice({
-    name:"user",
-    initialState:{
-        userData: loadUserFromLocalStorage()
+  name: "user",
+  initialState: {
+    userData: loadUserFromLocalStorage(),
+    suggestedUsers:[]
+  },
+  reducers: {
+    setUserData: (state, action) => {
+      state.userData = action.payload;
+      try {
+        localStorage.setItem("userData", JSON.stringify(action.payload));
+      } catch (error) {
+        console.error("Error saving user data to localStorage:", error);
+      }
     },
-    reducers:{
-        setUserData:(state,action) => {
-            state.userData = action.payload;
-            try {
-                localStorage.setItem('userData', JSON.stringify(action.payload));
-            } catch (error) {
-                console.error('Error saving user data to localStorage:', error);
-            }
-        },
-        clearUserData:(state) => {
-            state.userData = null;
-            // Remove from localStorage
-            try {
-                localStorage.removeItem('userData');
-            } catch (error) {
-                console.error('Error removing user data from localStorage:', error);
-            }
-        }
+    clearUserData: (state) => {
+      state.userData = null;
+      // Remove from localStorage
+      try {
+        localStorage.removeItem("userData");
+      } catch (error) {
+        console.error("Error removing user data from localStorage:", error);
+      }
+    },
+    setSuggestedUsers: (state, action) => {
+      state.suggestedUsers = action.payload;
     }
-})
+  },
+});
 
-export const {setUserData, clearUserData} = userSlice.actions;
+export const {setUserData, clearUserData, setSuggestedUsers} = userSlice.actions;
 export default userSlice.reducer;
