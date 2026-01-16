@@ -5,10 +5,12 @@ import { Toaster } from 'react-hot-toast'
 import ForgotPassword from './pages/ForgotPassword'
 import Home from './pages/Home'
 import { useSelector } from 'react-redux'
+import getSuggestedUsers from './hooks/getSuggestedUsers'
 
 const App = () => {
 
   const {userData} = useSelector((state) => state.user);
+  getSuggestedUsers();
   return (
     <>
       <Toaster
