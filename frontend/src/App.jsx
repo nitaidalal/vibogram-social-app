@@ -1,5 +1,7 @@
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
+import Profile from './pages/Profile'
+import EditProfile from './pages/EditProfile'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import ForgotPassword from './pages/ForgotPassword'
@@ -73,6 +75,8 @@ const App = () => {
         <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
         <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
         <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
+        <Route path='/profile/:username' element={userData ? <Profile /> : <Navigate to="/signin" />} />
+        <Route path='/edit-profile' element={userData ? <EditProfile /> : <Navigate to="/signin" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>

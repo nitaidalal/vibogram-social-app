@@ -32,3 +32,22 @@ export const videoUpload = multer({
     }
     },
 });
+
+// Unified multer middleware for posts (image or video)
+export const postUpload = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50 MB (max for video)
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedImages = ["image/jpeg", "image/png", "image/jpg"];
+    const allowedVideos = ["video/mp4", "video/webm", "video/mov", "video/avi", "video/mkv"];
+    const allAllowed = [...allowedImages, ...allowedVideos];
+    
+    if (!allAllowed.includes(file.mimetype)) {
+      cb(new Error("Only images and videos are allowed"), false);
+    } else {
+      cb(null, true);
+    }
+  },
+});

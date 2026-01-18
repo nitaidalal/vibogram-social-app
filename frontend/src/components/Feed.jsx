@@ -90,7 +90,7 @@ const Feed = () => {
           }}
         />
       </div>
-      <div className="w-full min-h-screen flex flex-col relative items-center gap-5 pt-10 pb-10 bg-white rounded">
+      <div className=" w-full flex justify-center ">
         <Navbar />
       </div>
     </div>
