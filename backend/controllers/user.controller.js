@@ -1,9 +1,10 @@
 import User from "../models/user.model.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getCurrentUser = async (req,res) => {
     try {
         const userId = req.userId;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate("posts").select("-password");
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
@@ -29,10 +30,10 @@ export const suggestedUsers = async (req,res)=>{
 export const updateProfile = async (req,res) => {
     try {
         const userId = req.userId;
-        const {name,userName, bio,gender} = req.body;
+        const {name,username, bio,gender} = req.body;
 
         //check if username is taken by other user
-        const existingUser = await User.findOne({userName});
+        const existingUser = await User.findOne({username});
         if(existingUser && existingUser._id.toString() !== userId){
             return res.status(400).json({success:false, message:"Username is already taken"});
         }
@@ -55,7 +56,7 @@ export const updateProfile = async (req,res) => {
 
         const updatedData = {
             ...(name && {name}),
-            ...(userName && {userName}),
+            ...(username && {username}),
             ...(bio && {bio}),
             ...(gender && {gender}),
             ...(profileImageUrl && {profileImage:profileImageUrl})
@@ -67,6 +68,20 @@ export const updateProfile = async (req,res) => {
 
         return res.status(200).json({updatedUser});
     } catch (error) {
+        console.error("Update Profile Error:", error);
         return res.status(500).json({message:"Update profile error", error});
+    }
+}
+
+export const getProfile = async(req,res) => {
+    try {
+        const {username} = req.params;
+        const user = await User.findOne({ username }).select("-password");
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+        return res.status(200).json({user});
+    } catch (error) {
+        res.status(500).json({message:"Get profile error", error});
     }
 }

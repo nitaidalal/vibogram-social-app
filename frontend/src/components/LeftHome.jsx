@@ -5,8 +5,10 @@ import { useDispatch } from "react-redux";
 import { clearUserData } from "../redux/userSlice";
 import axios from "axios";
 import { useState } from "react";
+import {useNavigate} from 'react-router-dom';
 
 const LeftHome = () => {
+  const navigate = useNavigate();
     const dispatch = useDispatch();
     const { userData } = useSelector((state) => state.user);
     const { suggestedUsers } = useSelector((state) => state.user);
@@ -79,7 +81,7 @@ const LeftHome = () => {
       {/* suggested users */}
       <div className="mt-4 pt-4  border-t border-gray-800">
         <h3 className="text-xl font-semibold mb-4">Suggested people</h3>
-        <div className="flex flex-col gap-4">
+        <div className="flex  flex-col gap-4">
           {suggestedUsers && suggestedUsers.length > 0 ? (
             suggestedUsers.slice(0, 3).map((user) => (
               <div
@@ -87,7 +89,10 @@ const LeftHome = () => {
                 className="flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 object-cover overflow-hidden rounded-full border-2 border-primary  flex justify-center items-center bg-gray-500">
+                  <div
+                    onClick={() => navigate(`/profile/${user.username}`)}
+                    className="h-10  w-10 cursor-pointer object-cover overflow-hidden rounded-full border-2 border-primary  flex justify-center items-center bg-gray-500"
+                  >
                     {user.profileImage ? (
                       <img
                         src={user.profileImage}
@@ -98,7 +103,10 @@ const LeftHome = () => {
                       <FaUserLarge className="text-white text-2xl" />
                     )}
                   </div>
-                  <div>
+                  <div
+                    onClick={() => navigate(`/profile/${user.username}`)}
+                    className="cursor-pointer"
+                  >
                     <h4 className="text-md font-medium">{user.name}</h4>
                   </div>
                 </div>
