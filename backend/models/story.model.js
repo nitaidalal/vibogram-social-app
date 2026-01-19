@@ -1,4 +1,4 @@
-import {Schema,mode, model} from "mongoose";
+import {Schema, model} from "mongoose";
 
 const storySchema = new Schema({
     author:{

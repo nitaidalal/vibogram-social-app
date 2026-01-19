@@ -76,7 +76,7 @@ export const updateProfile = async (req,res) => {
 export const getProfile = async(req,res) => {
     try {
         const {username} = req.params;
-        const user = await User.findOne({ username }).select("-password");
+        const user = await User.findOne({ username }).select("-password").populate("posts vibes");
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
@@ -85,3 +85,4 @@ export const getProfile = async(req,res) => {
         res.status(500).json({message:"Get profile error", error});
     }
 }
+

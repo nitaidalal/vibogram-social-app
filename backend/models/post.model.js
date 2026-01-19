@@ -26,9 +26,16 @@ const postSchema = new Schema({
         }
     ],
     comments:[
-        {
-            type:Schema.Types.ObjectId, 
-            ref:"Comment"
+        { 
+            author:{
+                type:Schema.Types.ObjectId, 
+                ref:"User"
+            },
+            content:{
+                type:String,
+            require:true
+            }
+            
         }
     ]
 },{timestamps:true});
