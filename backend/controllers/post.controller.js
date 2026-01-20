@@ -1,8 +1,10 @@
 import cloudinary from "../config/cloudinary.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import fs from "fs";
 
 export const uploadPost = async (req, res) => {
+    let filePath = null;
     try {
         const userId = req.userId;
         const {caption, mediaType} = req.body;
@@ -22,9 +24,17 @@ export const uploadPost = async (req, res) => {
             });
         }
 
-        // Convert file to base64
-        const fileBase64 = file.buffer.toString("base64");
-        const fileUri = `data:${file.mimetype};base64,${fileBase64}`;
+        // Check if file is on disk or in memory
+        let fileUri;
+        if (file.path) {
+            // File is on disk
+            filePath = file.path;
+            fileUri = filePath;
+        } else {
+            // File is in memory (buffer)
+            const fileBase64 = file.buffer.toString("base64");
+            fileUri = `data:${file.mimetype};base64,${fileBase64}`;
+        }
 
         // Configure upload options based on mediaType
         let uploadOptions = {
@@ -41,14 +51,17 @@ export const uploadPost = async (req, res) => {
             ];
         } else if (mediaType === 'video') {
             uploadOptions.chunk_size = 6000000;
-            uploadOptions.transformation = [
-                { quality: "auto" },
-            ];
         }
 
         // Upload to cloudinary
         const uploadResult = await cloudinary.uploader.upload(fileUri, uploadOptions);
         const mediaUrl = uploadResult.secure_url;
+
+        // Delete temporary file if it exists
+        if (filePath && fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            filePath = null;
+        }
 
         const post = await Post.create({
             author: userId,
@@ -70,6 +83,10 @@ export const uploadPost = async (req, res) => {
         });
 
     } catch (error) {
+        // Delete temporary file if upload fails
+        if (filePath && fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
         console.log("Post Upload Error:", error);
         res.status(500).json({
             message: "Post upload failed",
@@ -81,9 +98,10 @@ export const uploadPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find({author: req.userId})
-            .populate("author", "-password")
+        const posts = await Post.find({})
+            .populate("author", "name username profileImage")
             .sort({ createdAt: -1 });
+        console.log("Fetched Posts:", posts);
         res.status(200).json({ posts });
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch posts", error: error.message });
@@ -114,4 +132,73 @@ export const deletePost = async (req, res) => {
     }
 }
 
+export const likePost = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({message:"Post not found"});    
+        }
 
+        const alreadyLiked = post.likes.some(
+          (id) => id.toString() === req.userId,
+        );
+        if(alreadyLiked){
+            post.likes.pull(req.userId);
+        }else{
+            post.likes.push(req.userId);
+        }
+
+        await post.save();
+        await post.populate("author", "name username profileImage");
+        return res.status(200).json({message: alreadyLiked ? "Post unliked" : "Post liked", post});
+    } catch (error) {
+        console.error("Like Post Error:", error);
+        return res.status(500).json({message:"Like Post error", error} );
+    }
+}
+
+
+export const commentOnPost = async (req,res) => {
+    try {
+        const {content} = req.body;
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({message:"Post not found"});    
+        }
+
+        const comment = {
+            author: req.userId,
+            content
+        };
+        post.comments.push(comment);
+        await post.save();
+        await post.populate("author", "name username profileImage").populate("comments.author", "name username profileImage");
+        return res.status(200).json({message: "Comment added", post});
+    } catch (error) {
+        console.error("Comment Post Error:", error);
+        return res.status(500).json({message:"Comment Post error", error} );
+    }
+}
+
+export const savedPost = async (req,res) => {
+    try {
+        const postId = req.params.postId;
+        const user = await User.findById(req.userId);
+        const alreadySaved = user.savedPosts.some(
+          (id) => id.toString() === postId,
+        );
+
+        if(alreadySaved){
+            user.savedPosts.pull(postId);
+        }else{
+            user.savedPosts.push(postId);
+        }
+        await user.save();
+        return res.status(200).json({message: alreadySaved ? "Post unsaved" : "Post saved", savedPosts: user.savedPosts});
+    } catch (error) {
+        console.error("Save Post Error:", error);
+        return res.status(500).json({message:"Save Post error", error} );
+    }
+}
