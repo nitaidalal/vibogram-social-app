@@ -15,19 +15,25 @@ const Navbar = () => {
   return (
     <div className="w-[95%] sm:w-[90%] lg:w-[40%] h-16 bg-linear-to-r from-purple-600 via-pink-600 to-purple-600 shadow-2xl backdrop-blur-lg  text-white fixed bottom-2 md:bottom-4  rounded-full flex justify-around items-center z-50 px-4">
       {/* Home */}
-      <button className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
+      <button
+      onClick={() => navigate("/")}
+       className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
         <GoHomeFill className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
         <span className="text-[10px] mt-1 hidden sm:block">Home</span>
       </button>
 
       {/* Search */}
-      <button className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
+      <button
+      onClick={() => navigate("/search")}
+       className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
         <IoSearchOutline className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
         <span className="text-[10px] mt-1 hidden sm:block">Search</span>
       </button>
 
       {/* Add/Create */}
-      <button className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
+      <button
+      onClick={() => navigate("/upload")}
+       className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
         <div className=" bg-white rounded-full p-0.5">
           <IoMdAddCircleOutline className="text-xl sm:text-3xl text-purple-600 group-hover:text-pink-600 transition-colors" />
         </div>
@@ -35,7 +41,9 @@ const Navbar = () => {
       </button>
 
       {/* Vibes */}
-      <button className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
+      <button
+      onClick={() => navigate("/vibes")}
+       className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer">
         <MdOutlineSlowMotionVideo className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
         <span className="text-[10px] mt-1 hidden sm:block">Vibes</span>
       </button>
