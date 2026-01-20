@@ -4,10 +4,35 @@ import {useSelector} from 'react-redux';
 import StoryCard from './StoryCard';
 import Post from './Post';
 import Navbar from './navbar';
+import { useState,useEffect } from 'react';
+import axios from 'axios';
 
 
 const Feed = () => {
   const {userData} = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+  const getAllPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/posts/getAllPosts`, {
+        withCredentials: true
+      });
+      setPosts(response.data.posts || []);
+      console.log("All Posts:", response.data.posts);
+    } catch (error) {
+      console.log("Error fetching posts:", error?.response?.data?.message);
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+useEffect(() => {
+    getAllPosts();
+}, []);
+  
 
   return (
     <div className="w-full lg:w-[50%] lg:ml-[25%] min-h-screen  bg-dark-bg text-dark-text overflow-y-auto border-gray-700 relative">
@@ -43,52 +68,17 @@ const Feed = () => {
 
       {/* Posts section */}
       <div className="mt-4">
-        {/* Sample posts - Replace with actual posts from API */}
-        <Post
-          post={{
-            author: {
-              username: "john_doe",
-              profileImage: "",
-            },
-            mediaType: "image",
-            mediaUrl:
-              "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-            caption: "Beautiful mountain view! 🏔️ #nature #adventure",
-            likes: [1, 2, 3, 4, 5],
-            comments: [],
-            createdAt: new Date(),
-          }}
-        />
-        <Post
-          post={{
-            author: {
-              username: "jane_smith",
-              profileImage: "",
-            },
-            mediaType: "image",
-            mediaUrl:
-              "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800",
-            caption: "Exploring new horizons ✨",
-            likes: [1, 2, 3],
-            comments: [{}, {}],
-            createdAt: new Date(Date.now() - 86400000),
-          }}
-        />
-        <Post
-          post={{
-            author: {
-              username: "travel_lover",
-              profileImage: "",
-            },
-            mediaType: "image",
-            mediaUrl:
-              "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800",
-            caption: "Wanderlust 🌍",
-            likes: [1, 2, 3, 4, 5, 6, 7, 8],
-            comments: [],
-            createdAt: new Date(Date.now() - 172800000),
-          }}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-500"></div>
+          </div>
+        ) : posts.length > 0 ? (
+          posts.map((post) => <Post key={post._id} post={post} />)
+        ) : (
+          <div className="text-center py-10 text-[var(--color-text-secondary)]">
+            No posts yet. Be the first to share!
+          </div>
+        )}
       </div>
       <div className=" w-full flex justify-center ">
         <Navbar />

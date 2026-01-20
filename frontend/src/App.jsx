@@ -8,6 +8,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import Home from './pages/Home'
 import { useSelector } from 'react-redux'
 import getSuggestedUsers from './hooks/getSuggestedUsers'
+import UploadPost from './pages/UploadPost'
 
 const App = () => {
 
@@ -76,6 +77,7 @@ const App = () => {
         <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
         <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
         <Route path='/profile/:username' element={userData ? <Profile /> : <Navigate to="/signin" />} />
+        <Route path='/upload' element={userData ? <UploadPost /> : <Navigate to="/signin" />} />
         <Route path='/edit-profile' element={userData ? <EditProfile /> : <Navigate to="/signin" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
