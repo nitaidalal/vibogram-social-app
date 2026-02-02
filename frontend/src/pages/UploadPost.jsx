@@ -5,9 +5,17 @@ import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPosts } from '../redux/postSlice';
+import { setVibes } from '../redux/vibeSlice';
+import { setStories } from '../redux/storySlice';
 
 const UploadPost = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { posts } = useSelector((state) => state.post);
+  const { vibes } = useSelector((state) => state.vibe);
+  const { stories } = useSelector((state) => state.story);
   const [selectedType, setSelectedType] = useState(null);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -102,16 +110,7 @@ const UploadPost = () => {
       formData.append('mediaType', mediaType);
     }
 
-    // Proper way to log FormData contents
-    console.log("Selected Type:", selectedType);
-    console.log("Field Name:", fieldName);
-    console.log("File:", file);
-    console.log("Caption:", caption);
-    
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ', pair[1]);
-    }
-
+   
     try {
       setLoading(true);
       const endpoint = selectedType === 'post' ? '/posts/upload' : 
@@ -125,6 +124,15 @@ const UploadPost = () => {
           withCredentials: true,
         }
       );
+      
+      // Update Redux store with new content
+      if (selectedType === 'post' && response.data.post) {
+        dispatch(setPosts([response.data.post, ...posts]));
+      } else if (selectedType === 'vibe' && response.data.vibe) {
+        dispatch(setVibes([response.data.vibe, ...vibes]));
+      } else if (selectedType === 'story' && response.data.story) {
+        dispatch(setStories([response.data.story, ...stories]));
+      }
       
       toast.success(response.data.message || `${selectedType} uploaded successfully!`);
       navigate('/');

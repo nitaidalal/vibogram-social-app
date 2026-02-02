@@ -88,7 +88,10 @@ export const likeVibe = async (req, res) => {
         }
 
         await vibe.save();
-        await vibe.populate("author", "name username profileImage");
+        await vibe.populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "comments.author", select: "name username profileImage" }
+        ]);
         return res.status(200).json({message:"Vibe liked successfully", vibe});
         
     } catch (error) {
@@ -114,7 +117,10 @@ export const commentOnVibe = async (req,res) => {
         };
         vibe.comments.push(comment);
         await vibe.save();
-        await vibe.populate("author", "name username profileImage");
+        await vibe.populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "comments.author", select: "name username profileImage" }
+        ]);
         return res.status(200).json({message:"Comment added successfully", vibe});
     } catch (error) {
         console.error("Comment Vibe Error:", error);
@@ -125,7 +131,12 @@ export const commentOnVibe = async (req,res) => {
 
 export const getAllVibes = async (req,res) => {
     try {
-        const vibes = await Vibe.find({}).populate("author", "name username profileImage").sort({createdAt:-1}).populate("comments.author", "name username profileImage");
+        const vibes = await Vibe.find({})
+            .populate([
+                { path: "author", select: "name username profileImage" },
+                { path: "comments.author", select: "name username profileImage" }
+            ])
+            .sort({createdAt:-1});
         return res.status(200).json({vibes});
     } catch (error) {
         console.error("Get All Vibes Error:", error);   

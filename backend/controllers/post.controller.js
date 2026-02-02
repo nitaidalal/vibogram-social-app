@@ -100,6 +100,7 @@ export const getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find({})
             .populate("author", "name username profileImage")
+            .populate("comments.author", "name username profileImage")
             .sort({ createdAt: -1 });
         console.log("Fetched Posts:", posts);
         res.status(200).json({ posts });
@@ -150,7 +151,10 @@ export const likePost = async (req, res) => {
         }
 
         await post.save();
-        await post.populate("author", "name username profileImage");
+        await post.populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "comments.author", select: "name username profileImage" }
+        ]);
         return res.status(200).json({message: alreadyLiked ? "Post unliked" : "Post liked", post});
     } catch (error) {
         console.error("Like Post Error:", error);
@@ -174,7 +178,10 @@ export const commentOnPost = async (req,res) => {
         };
         post.comments.push(comment);
         await post.save();
-        await post.populate("author", "name username profileImage").populate("comments.author", "name username profileImage");
+        await post.populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "comments.author", select: "name username profileImage" }
+        ]);
         return res.status(200).json({message: "Comment added", post});
     } catch (error) {
         console.error("Comment Post Error:", error);

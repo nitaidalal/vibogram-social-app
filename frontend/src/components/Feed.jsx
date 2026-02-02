@@ -1,17 +1,21 @@
 import React from 'react'
 import { CiHeart } from "react-icons/ci";
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import StoryCard from './StoryCard';
 import Post from './Post';
 import Navbar from './navbar';
 import { useState,useEffect } from 'react';
 import axios from 'axios';
+import { setPosts } from '../redux/postSlice';
+import { setStories } from '../redux/storySlice';
 
 
 const Feed = () => {
-  const {userData} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [storiesLoading, setStoriesLoading] = useState(false);
+  const { posts } = useSelector((state) => state.post);
+  const { stories } = useSelector((state) => state.story);
 
   const getAllPosts = async () => {
     try {
@@ -19,19 +23,45 @@ const Feed = () => {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/posts/getAllPosts`, {
         withCredentials: true
       });
-      setPosts(response.data.posts || []);
+      dispatch(setPosts(response.data.posts || []));
       console.log("All Posts:", response.data.posts);
     } catch (error) {
       console.log("Error fetching posts:", error?.response?.data?.message);
-      setPosts([]);
+      dispatch(setPosts([]));
     } finally {
       setLoading(false);
     }
   }
 
+  const getAllStories = async () => {
+    try {
+      setStoriesLoading(true);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/story/getAllStories`, {
+        withCredentials: true
+      });
+      dispatch(setStories(response.data.stories || []));
+      console.log("All Stories:", response.data.stories);
+    } catch (error) {
+      console.log("Error fetching stories:", error?.response?.data?.message);
+      dispatch(setStories([]));
+    } finally {
+      setStoriesLoading(false);
+    }
+  }
+
 useEffect(() => {
     getAllPosts();
+    getAllStories();
 }, []);
+
+// const getAllVibes = async() => {
+//   try {
+//     setLoading(true);
+
+//   } catch (error) {
+    
+//   }
+// }
   
 
   return (
@@ -54,16 +84,23 @@ useEffect(() => {
 
       {/* stories section */}
       <div className="flex  items-center gap-3 py-3 overflow-x-auto px-2">
-        {/* <StoryCard/> */}
-        <StoryCard userName="nitai;kjmdsjfgsjglsj" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
-        <StoryCard userName="nitai" />
+        {storiesLoading ? (
+          <div className="flex justify-center items-center py-4 w-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          </div>
+        ) : stories && stories.length > 0 ? (
+          stories.map((story) => (
+            <StoryCard 
+              key={story._id} 
+              profileImage={story.author?.profileImage}
+              userName={story.author?.username || story.author?.name} 
+            />
+          ))
+        ) : (
+          <div className="text-center py-4 text-text-secondary w-full">
+            No stories yet
+          </div>
+        )}
       </div>
 
       {/* Posts section */}
@@ -75,7 +112,7 @@ useEffect(() => {
         ) : posts.length > 0 ? (
           posts.map((post) => <Post key={post._id} post={post} />)
         ) : (
-          <div className="text-center py-10 text-[var(--color-text-secondary)]">
+          <div className="text-center py-10 text-text-secondary">
             No posts yet. Be the first to share!
           </div>
         )}

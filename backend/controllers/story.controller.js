@@ -50,7 +50,10 @@ export const uploadStory = async (req, res) => {
             });
             user.story = story._id;
             await user.save();
-            const populatedStory = await Story.findById(story._id).populate("author", "name username profileImage").populate("viewers", "name username profileImage");
+            const populatedStory = await Story.findById(story._id).populate([
+                { path: "author", select: "name username profileImage" },
+                { path: "viewers", select: "name username profileImage" }
+            ]);
             res.status(201).json({ message: "Story uploaded successfully", story: populatedStory });
         }
     } catch (error) {
@@ -79,7 +82,10 @@ export const viewStory = async(req,res) => {
             await story.save();
         }
 
-        const populatedStory = await Story.findById(storyId).populate("author", "name username profileImage").populate("viewers", "name username profileImage");
+        const populatedStory = await Story.findById(storyId).populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "viewers", select: "name username profileImage" }
+        ]);
         return res.status(200).json({story: populatedStory});
     } catch (error) {
         console.error("View Story Error:", error);
