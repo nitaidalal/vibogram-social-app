@@ -26,6 +26,10 @@
   .bg-brand-gradient {
     background-image: linear-gradient(to right, #8B5CF6, #EC4899);
   }
+
+  .animate-heart-pop {
+    animation: heartPop 1s ease-out forwards;
+  }
 }
 
 
