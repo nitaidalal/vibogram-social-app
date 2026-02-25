@@ -17,6 +17,8 @@ const userSlice = createSlice({
     userData: loadUserFromLocalStorage(),
     suggestedUsers:[],
     profileData:null,
+    following:[],
+    loading:false,
   },
   reducers: {
     setUserData: (state, action) => {
@@ -41,9 +43,24 @@ const userSlice = createSlice({
     },
     setProfileData: (state, action) => {
       state.profileData = action.payload;
+    },
+    setFollowing: (state,action) => {
+      state.following = action.payload;
+    },
+    toggleFollow: (state, action) => {
+      const userId = action.payload;
+      if (state.following.includes(userId)) {
+        state.following = state.following.filter(id => id !== userId);
+      } else {
+        state.following.push(userId);
+      }
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     }
+
   },
 });
 
-export const {setUserData, clearUserData, setSuggestedUsers, setProfileData} = userSlice.actions;
+export const {setUserData, clearUserData, setSuggestedUsers, setProfileData, setFollowing, toggleFollow, setLoading} = userSlice.actions;
 export default userSlice.reducer;
