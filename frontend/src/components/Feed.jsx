@@ -75,7 +75,7 @@ useEffect(() => {
             className="h-8 w-8 sm:h-10 sm:w-10 "
           />
           <span className="text-primary text-2xl sm:text-3xl font-bold ">
-            ibogram
+            ynox
           </span>
         </div>
         <div>
