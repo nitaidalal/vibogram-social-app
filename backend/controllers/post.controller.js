@@ -102,7 +102,7 @@ export const getAllPosts = async (req, res) => {
             .populate("author", "name username profileImage")
             .populate("comments.author", "name username profileImage")
             .sort({ createdAt: -1 });
-        console.log("Fetched Posts:", posts);
+        // console.log("Fetched Posts:", posts);
         res.status(200).json({ posts });
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch posts", error: error.message });
