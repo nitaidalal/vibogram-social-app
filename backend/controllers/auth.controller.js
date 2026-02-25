@@ -45,6 +45,7 @@ export const signup = async (req,res) => {
             profileImage: newUser.profileImage,
             followers: newUser.followers,
             following: newUser.following,
+            savedPosts: newUser.savedPosts,
             createdAt: newUser.createdAt,
             updatedAt: newUser.updatedAt
         };
@@ -94,6 +95,7 @@ export const signin = async (req, res) => {
         profileImage: user.profileImage,
         followers: user.followers,
         following: user.following,
+        savedPosts: user.savedPosts,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
     };
