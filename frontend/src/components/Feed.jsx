@@ -16,6 +16,7 @@ const Feed = () => {
   const [storiesLoading, setStoriesLoading] = useState(false);
   const { posts } = useSelector((state) => state.post);
   const { stories } = useSelector((state) => state.story);
+  const userData = useSelector((state) => state.user.userData);
 
   const getAllPosts = async () => {
     try {
@@ -84,16 +85,29 @@ useEffect(() => {
 
       {/* stories section */}
       <div className="flex  items-center gap-3 py-3 overflow-x-auto px-2">
+        <StoryCard 
+          profileImage={userData?.profileImage} 
+          userName={"Your Story"}
+          ownStory={true}
+          hasStory={userData?.story ? true : false}
+          username={userData?.username}
+          storyId={userData?.story}
+        />
         {storiesLoading ? (
           <div className="flex justify-center items-center py-4 w-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
           </div>
         ) : stories && stories.length > 0 ? (
-          stories.map((story) => (
+          stories
+            .filter((story) => story.author?._id !== userData?._id)
+            .map((story) => (
             <StoryCard 
               key={story._id} 
               profileImage={story.author?.profileImage}
-              userName={story.author?.username || story.author?.name} 
+              userName={story.author?.username || story.author?.name}
+              hasStory={true}
+              username={story.author?.username}
+              storyId={story._id}
             />
           ))
         ) : (
@@ -117,7 +131,7 @@ useEffect(() => {
           </div>
         )}
       </div>
-      <div className=" w-full flex justify-center ">
+      <div className=" w-full flex justify-center">
         <Navbar />
       </div>
     </div>
