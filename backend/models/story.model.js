@@ -4,16 +4,17 @@ const storySchema = new Schema({
     author:{
         type:Schema.Types.ObjectId,
         ref:"User",
-        require:true
+        required:true
     },
     mediaType:{
         type:String,
         enum:["image","video"],
-        require:true
+        required:true,
+        // default:"image"
     },
     mediaUrl:{
         type:String,
-        require:true
+        required:true
     },
     viewers:[
         {
