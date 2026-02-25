@@ -4,7 +4,10 @@ import cloudinary from "../config/cloudinary.js";
 export const getCurrentUser = async (req,res) => {
     try {
         const userId = req.userId;
-        const user = await User.findById(userId).populate("posts").select("-password");
+        const user = await User.findById(userId)
+            .populate("posts")
+            .populate("story")
+            .select("-password");
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
@@ -76,7 +79,7 @@ export const updateProfile = async (req,res) => {
 export const getProfile = async(req,res) => {
     try {
         const {username} = req.params;
-        const user = await User.findOne({ username }).select("-password").populate("posts vibes");
+        const user = await User.findOne({ username }).select("-password").populate("posts vibes savedPosts");
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
@@ -86,3 +89,48 @@ export const getProfile = async(req,res) => {
     }
 }
 
+export const followUser = async (req, res) => {
+    try {
+        const userIdToFollow = req.params.userId;
+        const currentUserId = req.userId;
+
+        // Can't follow yourself
+        if (userIdToFollow === currentUserId) {
+            return res.status(400).json({ message: "You cannot follow yourself" });
+        }
+
+        const currentUser = await User.findById(currentUserId);
+        const userToFollow = await User.findById(userIdToFollow);
+
+        if (!userToFollow) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isAlreadyFollowing = currentUser.following.includes(userIdToFollow);
+
+        if (isAlreadyFollowing) {
+            // Unfollow
+            currentUser.following.pull(userIdToFollow);
+            userToFollow.followers.pull(currentUserId);
+            await currentUser.save();
+            await userToFollow.save();
+            return res.status(200).json({ 
+                message: "Unfollowed successfully", 
+                isFollowing: false
+            });
+        } else {
+            // Follow
+            currentUser.following.push(userIdToFollow);
+            userToFollow.followers.push(currentUserId);
+            await currentUser.save();
+            await userToFollow.save();
+            return res.status(200).json({ 
+                message: "Followed successfully", 
+                isFollowing: true
+            });
+        }
+    } catch (error) {
+        console.error("Follow User Error:", error);
+        return res.status(500).json({ message: "Follow user error", error });
+    }
+}
