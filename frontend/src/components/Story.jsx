@@ -58,17 +58,6 @@ const Story = () => {
       );
       
       setCurrentStory(response.data.story);
-      
-      // Mark as viewed if not own story
-      if (!isOwnStory && response.data.story?._id) {
-        await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/story/view/${response.data.story._id}`,
-          {},
-          { withCredentials: true }
-        );
-      }
-
-
     } catch (error) {
       console.error('Error fetching story:', error.response?.data || error.message);
       toast.error(error.response?.data?.message || 'Story not found or expired');
