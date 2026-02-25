@@ -35,11 +35,15 @@ const Post = ({ post }) => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          videoRef.current.play();
-          setIsPlaying(true);
+          if (videoRef.current) {
+            videoRef.current.play();
+            setIsPlaying(true);
+          }
         } else {
-          videoRef.current.pause();
-          setIsPlaying(false);
+          if (videoRef.current) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
         }
       })
     }, { threshold: 0.7 });
