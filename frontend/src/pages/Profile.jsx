@@ -17,6 +17,7 @@ import Post from '../components/Post';
 
 
 const Profile = () => {
+  const {theme} = useSelector((state) => state.theme);
   const { username } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,16 +71,16 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-dark-bg text-dark-text flex items-center justify-center">
+      <div className="w-full min-h-screen bg-bg text-text-primary flex items-center justify-center">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="w-full mx-auto min-h-screen bg-dark-bg text-dark-text pb-20">
+    <div className="w-full mx-auto min-h-screen bg-bg text-text-primary pb-20">
       {/* Header */}
-      <div className=" sticky top-0 z-40 bg-dark-bg border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+      <div className=" sticky top-0 z-40 bg-bg border-b border-border px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => navigate("/")}
           className="cursor-pointer text-2xl"
@@ -99,12 +100,13 @@ const Profile = () => {
           <div className="flex items-center gap-6 mb-6">
             {/* Profile Picture */}
             <div className="shrink-0">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-full overflow-hidden border-2 border-primary flex justify-center items-center bg-gray-700">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-full overflow-hidden border-3 border-fuchsia-500 flex justify-center items-center bg-gray-700">
+                
                 {profileData?.profileImage ? (
                   <img
                     src={profileData.profileImage}
                     alt={profileData.name}
-                    className="object-cover h-full w-full"
+                    className="object-cover h-full w-full "
                   />
                 ) : (
                   <FaUserLarge className="text-white text-4xl md:text-5xl" />
@@ -124,7 +126,7 @@ const Profile = () => {
                 <p className="text-xl md:text-2xl font-bold">
                   {profileData?.followers?.length || 0}
                 </p>
-                <p className="text-sm text-gray-400">Followers</p>
+                <p className="text-sm text-gray-400">{profileData?.followers?.length <= 1 ? "Follower" : "Followers"}</p>
               </div>
               <div className="cursor-pointer">
                 <p className="text-xl md:text-2xl font-bold">
@@ -139,7 +141,7 @@ const Profile = () => {
           <div className="mb-4">
             <h2 className="font-semibold text-lg">{profileData?.name}</h2>
             {profileData?.bio && (
-              <p className="text-sm text-gray-300 mt-1">{profileData.bio}</p>
+              <p className="text-sm text-text-secondary mt-1">{profileData.bio}</p>
             )}
           </div>
 
@@ -175,7 +177,7 @@ const Profile = () => {
               onClick={() => setActiveTab("posts")}
               className={`flex-1 py-3 flex items-center justify-center gap-2 border-t-2 cursor-pointer ${
                 activeTab === "posts"
-                  ? "border-white text-white"
+                  ? "  border-accent text-text-primary"
                   : "border-transparent text-gray-400"
               } transition-colors`}
             >
@@ -188,7 +190,7 @@ const Profile = () => {
               onClick={() => setActiveTab("reels")}
               className={`flex-1 py-3 flex items-center justify-center gap-2 border-t-2 cursor-pointer ${
                 activeTab === "reels"
-                  ? "border-white text-white"
+                  ? "border-accent text-text-primary"
                   : "border-transparent text-gray-400"
               } transition-colors`}
             >
@@ -201,7 +203,7 @@ const Profile = () => {
               onClick={() => setActiveTab("saved")}
               className={`flex-1 py-3 flex items-center justify-center gap-2 border-t-2 cursor-pointer ${
                 activeTab === "saved"
-                  ? "border-white text-white"
+                  ? "border-accent text-text-primary"
                   : "border-transparent text-gray-400"
               } transition-colors`}
             >
@@ -258,7 +260,7 @@ const Profile = () => {
             </div>
           )}
           {activeTab === "reels" && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <div className="flex flex-col items-center justify-center  text-gray-400">
               {profileData?.vibes && profileData.vibes.length > 0 ? (
                 <div className="grid grid-cols-3 gap-1">
                   {profileData.vibes.map((vibe, index) => (
@@ -290,7 +292,7 @@ const Profile = () => {
             </div>
           )}
           {activeTab === "saved" && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <div className="flex flex-col items-center justify-center text-gray-400">
               {profileData?.savedPosts && profileData.savedPosts.length > 0 ? (
                 <div className="grid grid-cols-3 gap-1">
                   {profileData.savedPosts.map((post, index) => (

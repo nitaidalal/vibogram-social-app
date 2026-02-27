@@ -29,8 +29,8 @@ const LeftHome = () => {
       }
     }
   return (
-    <div className="w-[25%] hidden lg:block border-r bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950
- px-4 text-dark-text border-gray-700 h-screen overflow-y-auto fixed left-0 top-0">
+    <div className="w-[25%] hidden lg:block border-r bg-bg
+ px-4 text-text-primary border-gray-700 h-screen overflow-y-auto fixed left-0 top-0">
       <div className="flex  justify-between items-center h-25 ">
         <div className="flex">
           <img src="/logo.png" alt="Logo" className="h-12 w-12 " />
