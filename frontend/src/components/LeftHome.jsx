@@ -1,114 +1,295 @@
-import { CiHeart } from "react-icons/ci";
-import { FaUserLarge } from "react-icons/fa6";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toggleTheme } from "../redux/themeSlice";
 import { clearUserData } from "../redux/userSlice";
 import axios from "axios";
-import { useState } from "react";
-import {useNavigate} from 'react-router-dom';
-import Follow from './Resuable/Follow';
-import Loader from "./Loader";
+
+// Icons
+import { GoHomeFill, GoHome } from "react-icons/go";
+import { IoSearchOutline, IoSearch } from "react-icons/io5";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import {
+  MdOutlineSlowMotionVideo,
+  MdSlowMotionVideo,
+  MdOutlineExplore,
+  MdExplore,
+} from "react-icons/md";
+import { FaUserLarge } from "react-icons/fa6";
+import { IoSettingsOutline } from "react-icons/io5";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
+import { IoNotificationsOutline, IoNotifications } from "react-icons/io5";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { LuLogOut } from "react-icons/lu";
+import { LuSend } from "react-icons/lu";
+
+import LogoutModal from "./settings/LogoutModal";
+
+
 
 const LeftHome = () => {
+  const { userData } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { userData, loading } = useSelector((state) => state.user);
-    const { suggestedUsers } = useSelector((state) => state.user);
+  const location = useLocation();
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-    const handleLogout = async () => {
-      try {
-        // pass withCredentials in the axios config (3rd arg) so browser sends cookies
-        await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/auth/signout`,
-          {},
-          { withCredentials: true }
-        );
-        dispatch(clearUserData());
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
+  const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/signout`,
+        {},
+        { withCredentials: true }
+      );
+      dispatch(clearUserData());
+    } catch (error) {
+      console.error("Logout error:", error);
     }
+  };
+
+  const navItems = [
+    {
+      label: "Home",
+      path: "/",
+      icon: isActive("/") ? (
+        <GoHomeFill className="text-2xl" />
+      ) : (
+        <GoHome className="text-2xl" />
+      ),
+    },
+    {
+      label: "Search",
+      path: "/search",
+      icon: isActive("/search") ? (
+        <IoSearch className="text-2xl" />
+      ) : (
+        <IoSearchOutline className="text-2xl" />
+      ),
+    },
+    {
+      label: "Explore",
+      path: "/explore",
+      icon: isActive("/explore") ? (
+        <MdExplore className="text-2xl" />
+      ) : (
+        <MdOutlineExplore className="text-2xl" />
+      ),
+    },
+    {
+      label: "Vibes",
+      path: "/vibes",
+      icon: isActive("/vibes") ? (
+        <MdSlowMotionVideo className="text-2xl" />
+      ) : (
+        <MdOutlineSlowMotionVideo className="text-2xl" />
+      ),
+    },
+    {
+      label: "Create",
+      path: "/upload",
+      icon: <IoMdAddCircleOutline className="text-2xl" />,
+    },
+    {
+      label: "Notifications",
+      path: "/notifications",
+      icon: isActive("/notifications") ? (
+        <IoNotifications className="text-2xl" />
+      ) : (
+        <IoNotificationsOutline className="text-2xl" />
+      ),
+    },
+    {
+      label: "Messages",
+      path: "/messages",
+      icon: isActive("/messages") ? (
+        <LuSend className="text-2xl" />
+      ) : (
+        <LuSend className="text-2xl" />
+      ),
+    },
+    {
+      label: "Saved",
+      path: "/saved",
+      icon: isActive("/saved") ? (
+        <BsBookmarkFill className="text-xl" />
+      ) : (
+        <BsBookmark className="text-xl" />
+      ),
+    },
+  ];
+
   return (
-    <div className="w-[25%] hidden lg:block border-r bg-bg
- px-4 text-text-primary border-gray-700 h-screen overflow-y-auto fixed left-0 top-0">
-      <div className="flex  justify-between items-center h-25 ">
-        <div className="flex">
-          <img src="/logo.png" alt="Logo" className="h-12 w-12 " />
-          <span className="text-primary text-4xl font-bold ">ynox</span>
-        </div>
-        <div>
-          <CiHeart className="text-4xl" />
-        </div>
-      </div>
-      {/* user photo and name and id*/}
-      <div className="flex items-center gap-2.5 ">
-        <div className="h-12 w-12 object-cover overflow-hidden rounded-full border-3 border-primary  flex justify-center items-center bg-gray-500">
-          {userData && userData.profileImage ? (
-            <img
-              src={userData?.profileImage}
-              alt={userData?.name}
-              className=" object-cover h-full w-full"
-            />
-          ) : (
-            <FaUserLarge className="text-white text-3xl" />
-          )}
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold">{userData?.name}</h2>
-          <p className="text-sm text-gray-400">@{userData?.username}</p>
-        </div>
-        <div className="ml-auto">
-          <button
-            onClick={handleLogout}
-            className="px-3 py-2 bg-rose-500 text-white cursor-pointer rounded-md"
+    <div
+      className="
+        hidden sm:flex flex-col justify-between
+        fixed left-0 top-0 h-screen z-40
+        sm:w-[72px] lg:w-[240px]
+        bg-bg border-r border-border
+        text-text-primary
+        transition-all duration-300
+      "
+    >
+      {/* ── TOP SECTION ── */}
+      <div>
+        {/* Logo */}
+        <div className="flex items-center md:justify-center lg:justify-start px-3 h-[72px] mb-1">
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="h-9 w-9 shrink-0 cursor-pointer"
+            onClick={() => navigate("/")}
+          />
+          <span
+            className="text-primary text-2xl font-bold ml-1.5 hidden lg:block cursor-pointer"
+            onClick={() => navigate("/")}
           >
-            Log Out
-          </button>
+            ynox
+          </span>
         </div>
+
+        {/* Navigation Items */}
+        <nav className="flex flex-col gap-0.5 px-2">
+          {navItems.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <button
+                key={item.label}
+                onClick={() => navigate(item.path)}
+                title={item.label}
+                className={`
+                  flex items-center gap-3.5 px-3 py-3 rounded-xl
+                  transition-all duration-200 w-full cursor-pointer
+                  md:justify-center lg:justify-start
+                  ${
+                    active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                  }
+                `}
+              >
+                <span className="shrink-0">{item.icon}</span>
+                <span
+                  className={`text-sm hidden lg:block ${active ? "font-semibold" : "font-normal"}`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+
+          {/* Profile */}
+          <button
+            onClick={() => navigate(`/profile/${userData?.username}`)}
+            title="Profile"
+            className={`
+              flex items-center gap-3.5 px-3 py-3 rounded-xl
+              transition-all duration-200 w-full cursor-pointer
+              md:justify-center lg:justify-start
+              ${
+                isActive(`/profile/${userData?.username}`)
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+              }
+            `}
+          >
+            <div
+              className="
+                h-7 w-7 rounded-full overflow-hidden shrink-0
+                border-2 border-border flex justify-center items-center bg-surface
+              "
+            >
+              {userData?.profileImage ? (
+                <img
+                  src={userData.profileImage}
+                  alt={userData.name}
+                  className="object-cover h-full w-full"
+                />
+              ) : (
+                <FaUserLarge className="text-[11px]" />
+              )}
+            </div>
+            <span
+              className={`text-sm hidden lg:block ${
+                isActive(`/profile/${userData?.username}`)
+                  ? "font-semibold"
+                  : "font-normal"
+              }`}
+            >
+              Profile
+            </span>
+          </button>
+        </nav>
       </div>
 
-      {/* suggested users */}
-      <div className="mt-4 pt-4  border-t border-gray-800">
-        <h3 className="text-xl font-semibold mb-4">Suggested people</h3>
-        <div className="flex  flex-col gap-4">
-          {loading? (
-            <div className=" h-36 flex justify-center items-center"> <Loader /></div>
-          ) : suggestedUsers && suggestedUsers.length > 0 ? (
-            suggestedUsers.slice(0, 3).map((user) => (
-              <div
-                key={user._id}
-                className="flex items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    onClick={() => navigate(`/profile/${user.username}`)}
-                    className="h-10  w-10 cursor-pointer object-cover overflow-hidden rounded-full border-2 border-primary  flex justify-center items-center bg-gray-500"
-                  >
-                    {user.profileImage ? (
-                      <img
-                        src={user.profileImage}
-                        alt={user.name}
-                        className=" object-cover h-full w-full"
-                      />
-                    ) : (
-                      <FaUserLarge className="text-white text-2xl" />
-                    )}
-                  </div>
-                  <div
-                    onClick={() => navigate(`/profile/${user.username}`)}
-                    className="cursor-pointer"
-                  >
-                    <h4 className="text-md font-medium">{user.name}</h4>
-                  </div>
-                </div>
-                <Follow userId={user._id} />
-              </div>
-            ))
+      {/* ── BOTTOM SECTION ── */}
+      <div className="flex flex-col gap-0.5 px-2 pb-5">
+        {/* Divider */}
+        <div className="mx-3 mb-1 border-t border-border" />
+
+        {/* Settings */}
+        <button
+          onClick={() => navigate("/settings")}
+          title="Settings"
+          className={`
+            flex items-center gap-3.5 px-3 py-3 rounded-xl
+            transition-all duration-200 w-full cursor-pointer
+            md:justify-center lg:justify-start
+            ${
+              isActive("/settings")
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+            }
+          `}
+        >
+          <IoSettingsOutline className="text-[21px] shrink-0" />
+          <span className="text-sm hidden lg:block">Settings</span>
+        </button>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={() => dispatch(toggleTheme())}
+          title={theme === "dark" ? "Switch to Light" : "Switch to Dark"}
+          className="
+            flex items-center gap-3.5 px-3 py-3 rounded-xl
+            transition-all duration-200 w-full cursor-pointer
+            md:justify-center lg:justify-start
+            text-text-secondary hover:bg-surface-hover hover:text-text-primary
+          "
+        >
+          {theme === "dark" ? (
+            <HiOutlineSun className="text-[21px] shrink-0 text-yellow-400" />
           ) : (
-            <p className="text-gray-400">No suggested users available.</p>
+            <HiOutlineMoon className="text-[21px] shrink-0" />
           )}
-        </div>
+          <span className="text-sm hidden lg:block">
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </span>
+        </button>
+
+        {/* Logout */}
+        <button
+          onClick={() => setShowLogoutConfirm(true)}
+          title="Logout"
+          className="
+            flex items-center gap-3.5 px-3 py-3 rounded-xl
+            transition-all duration-200 w-full cursor-pointer
+            md:justify-center lg:justify-start
+            text-text-secondary hover:bg-danger/10 hover:text-danger
+          "
+        >
+          <LuLogOut className="text-[21px] shrink-0" />
+          <span className="text-sm hidden lg:block">Logout</span>
+        </button>
       </div>
+
+      <LogoutModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 };
