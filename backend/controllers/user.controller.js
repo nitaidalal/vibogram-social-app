@@ -80,7 +80,30 @@ export const updateProfile = async (req,res) => {
 export const getProfile = async(req,res) => {
     try {
         const {username} = req.params;
-        const user = await User.findOne({ username }).select("-password").populate("posts vibes savedPosts");
+        const user = await User.findOne({ username })
+            .select("-password")
+            .populate({
+                path: "posts",
+                populate: [
+                    { path: "author", select: "name username profileImage" },
+                    { path: "comments.author", select: "name username profileImage" }
+                ]
+            })
+            .populate({
+                path: "savedPosts",
+                populate: [
+                    { path: "author", select: "name username profileImage" },
+                    { path: "comments.author", select: "name username profileImage" }
+                ]
+            })
+            .populate({
+                path:"vibes",
+                populate:[
+                    {path:"author",select:"name username profileImage"},
+                    {path:"comments.author",select:"name username profileImage" }
+                ]
+            });
+        
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
