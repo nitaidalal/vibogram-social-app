@@ -66,8 +66,8 @@ useEffect(() => {
   
 
   return (
-    <div className="w-full lg:w-[50%] lg:ml-[25%] min-h-screen  bg-bg text-text-primary overflow-y-auto border-gray-700 relative">
-      <div className="flex mx-6 lg:hidden  justify-between items-center h-14 ">
+    <div className="w-full sm:ml-[72px] md:w-[calc(70%-72px)] lg:ml-[240px] lg:w-[calc(70%-240px)] sm:px-3 lg:px-4  min-h-screen bg-bg text-text-primary overflow-y-auto border-gray-700 relative">
+      <div className="flex mx-6 sm:hidden  justify-between items-center h-14 ">
         <div className="flex ">
           <img
             src="/logo.png"
