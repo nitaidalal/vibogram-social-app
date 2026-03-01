@@ -213,7 +213,7 @@ const Post = ({ post }) => {
   }
 
   return (
-    <div className="bg-surface text-text-primary rounded-2xl hover:scale-[1.01] transition-all duration-200 overflow-hidden shadow-lg border border-border mb-6 hover:shadow-xl">
+    <div className="bg-surface text-text-primary rounded-2xl transition-all duration-200 overflow-hidden shadow-lg border border-border mb-6 hover:shadow-xl">
       {/* Post Header */}
       <div
         className="flex items-center justify-between px-4 py-4 backdrop-blur-sm border-b border-border bg-linear-to-r from-purple-500/10 to-pink-500/10"
@@ -247,7 +247,7 @@ const Post = ({ post }) => {
           )}
           <button
             onClick={() => setClickThreeDots(true)}
-            className="cursor-pointer text-text-secondary hover:text-text-primary transition-colors p-2 hover:bg-surface-hover rounded-full"
+            className="cursor-pointer text-text-secondary hover:text-text-primary transition-colors p-2 hover:scale-105 rounded-full"
           >
             <BsThreeDots className="text-xl" />
           </button>
@@ -257,7 +257,7 @@ const Post = ({ post }) => {
       {/* Post Media */}
       <div
         onDoubleClick={handleDoubleClick}
-        className="w-full relative cursor-pointer select-none group bg-black/40"
+        className="w-full relative cursor-pointer select-none group bg-media-bg"
   
       >
         {post?.mediaType === "video" ? (
