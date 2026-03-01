@@ -13,7 +13,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="w-[100%] sm:w-[90%] lg:w-[40%] h-16 bg-gradient-to-r from-pink-500 to-fuchsia-500  border border-white/10 shadow-2xl backdrop-blur-sm  text-white fixed bottom-2 md:bottom-4  sm:rounded-full flex justify-around items-center z-50 px-4">
+    <div className="sm:hidden w-[100%] sm:w-[90%] h-16 bg-gradient-to-r from-pink-500 to-fuchsia-500 border border-white/10 shadow-2xl backdrop-blur-sm text-white fixed bottom-2 sm:rounded-full flex justify-around items-center z-50 px-4">
       {/* Home */}
       <button
         onClick={() => navigate("/")}
