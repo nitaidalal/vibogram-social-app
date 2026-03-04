@@ -78,7 +78,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full mx-auto min-h-screen bg-bg text-text-primary pb-20">
+    <div className=" mx-auto min-h-screen bg-bg text-text-primary pb-20 sm:ml-[72px] lg:ml-[240px]">
       {/* Header */}
       <div className=" sticky top-0 z-40 bg-bg border-b border-border px-4 py-3 flex items-center justify-between">
         <button
@@ -162,7 +162,9 @@ const Profile = () => {
             ) : (
               <>
                 <Follow userId={profileData?._id} location="profile" onFollowChange={handleProfile} />
-                <button className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                <button
+                  onClick={() => navigate('/messages', { state: { user: profileData } })}
+                  className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
                   Message
                 </button>
               </>

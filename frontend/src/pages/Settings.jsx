@@ -47,7 +47,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-bg text-text-primary">
+    <div className="min-h-screen bg-bg text-text-primary sm:ml-[72px] lg:ml-[240px]">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-bg border-b border-border">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">

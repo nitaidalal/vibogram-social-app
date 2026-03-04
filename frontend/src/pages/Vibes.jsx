@@ -50,18 +50,16 @@ const Vibes = () => {
   };
 
   return (
-    <div className="w-full h-screen bg-black text-white overflow-hidden relative">
+    <div className=" h-screen bg-bg text-text-primary overflow-hidden relative sm:ml-[72px] lg:ml-[240px]">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 bg-gradient-to-b from-black/70 to-transparent">
+      <div className="absolute top-0 left-0 z-20 flex items-center justify-between p-4 ">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors"
+          className="flex items-center gap-2 text-text-primary hover:text-purple-400 transition-colors"
         >
           <IoArrowBack className="text-2xl" />
-          <span className="font-semibold">Back</span>
         </button>
-        <h1 className="text-xl font-bold">Vibes</h1>
-        <div className="w-20"></div> {/* Spacer for centering */}
+    
       </div>
 
       {/* Vibes Content */}

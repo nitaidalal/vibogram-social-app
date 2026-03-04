@@ -158,13 +158,13 @@ const UploadPost = ({ isStory = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[--color-bg] py-8 px-4">
+    <div className="min-h-screen bg-bg py-8 px-4 sm:ml-[72px] lg:ml-[240px]">
       <div className="max-w-4xl mx-auto">
         
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
-          className="mb-6 cursor-pointer text-text-secondary hover:text-white flex items-center gap-2 transition-colors"
+          className="mb-6 sm:hidden cursor-pointer text-text-secondary hover:text-purple-400 flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="text-xl" />
           <span>Back to Home</span>
@@ -196,7 +196,7 @@ const UploadPost = ({ isStory = false }) => {
                                  flex items-center justify-center mb-4 mx-auto`}>
                     <Icon className="text-white text-2xl" />
                   </div>
-                  <h3 className="text-xl font-bold text-center mb-2 text-white">
+                  <h3 className="text-xl font-bold text-center mb-2 text-text-primary">
                     {type.title}
                   </h3>
                   <p className="text-text-secondary text-center text-sm">
