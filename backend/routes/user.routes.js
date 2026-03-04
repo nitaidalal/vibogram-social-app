@@ -1,6 +1,6 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
-import { getCurrentUser, getProfile, suggestedUsers, updateProfile, followUser, changePassword } from '../controllers/user.controller.js';
+import { getCurrentUser, getProfile, suggestedUsers, updateProfile, followUser, changePassword, searchUsers } from '../controllers/user.controller.js';
 import { imageUpload } from '../middlewares/multer.middleware.js';
 const userRouter = express.Router();
 
@@ -10,4 +10,5 @@ userRouter.put("/update-profile", authMiddleware, imageUpload.single("profileIma
 userRouter.get("/profile/:username", authMiddleware, getProfile);
 userRouter.post("/follow/:userId", authMiddleware, followUser);
 userRouter.post("/change-password",authMiddleware,changePassword);
+userRouter.post("/search/:query",authMiddleware,searchUsers);
 export default userRouter;

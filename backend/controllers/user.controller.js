@@ -187,3 +187,19 @@ export const changePassword = async(req,res)=>{
         res.status(500).json({message:"Error in changing password"})
     }
 }
+
+
+export const searchUsers = async(req,res) => {
+    try {
+        const {query} = req.params;
+        const users = await User.find({
+            $or: [
+                { name: { $regex: query, $options: "i" } }, //regex for case-insensitive search in name , options i for case-insensitive
+                { username: { $regex: query, $options: "i" } }
+            ]
+        }).select("name username profileImage");
+        res.status(200).json({users});
+    } catch (error) {
+        res.status(500).json({message:"Error in searching users", error});
+    }
+}
