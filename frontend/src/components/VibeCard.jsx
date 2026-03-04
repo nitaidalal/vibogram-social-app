@@ -164,7 +164,7 @@ const VibeCard = ({
 
 
   return (
-    <div className="relative w-full h-screen snap-start bg-gray-900 ">
+    <div className="relative w-full h-screen snap-start bg-black">
       {/* Video */}
       <video
         ref={videoRef}
@@ -213,7 +213,7 @@ const VibeCard = ({
           <img
             src={vibe.author?.profileImage || "/default-avatar.png"}
             alt={vibe.author?.name}
-            className="w-10 h-10 rounded-full border-2 border-white object-cover"
+            className="w-10 h-10 rounded-full border-2 border-purple-500 object-cover"
           />
           <div>
             <p className="font-semibold text-white">{vibe.author?.name}</p>

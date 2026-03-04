@@ -88,14 +88,14 @@ const EditProfile = () => {
  
 
   return (
-    <div className="min-h-screen bg-dark-bg flex justify-center ">
-      <div className="w-full max-w-2xl bg-dark-surface rounded-2xl shadow-2xl shadow-purple-900/20 hover:shadow-purple-600/40 hover:shadow-2xl transition-shadow duration-300">
+    <div className="min-h-screen bg-bg flex justify-center sm:ml-[72px] lg:ml-[240px]">
+      <div className="w-full max-w-2xl bg-surface border border-border rounded-2xl shadow-2xl shadow-purple-900/20 hover:shadow-purple-600/40 hover:shadow-2xl transition-shadow duration-300">
         {/* Header */}
-        <div className="sticky top-0 z-40 bg-dark-bg  border-b border-border px-6 py-4 rounded-t-2xl">
+        <div className="sticky top-0 z-40 bg-surface-hover border-b border-border px-6 py-4 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <button
               onClick={() => navigate(-1)}
-              className="text-xl text-gray-400 hover:text-white transition"
+              className="text-xl text-gray-400 hover:text-text-primary transition"
             >
               <IoMdClose />
             </button>
@@ -107,7 +107,7 @@ const EditProfile = () => {
         {/* Content */}
         <div className="max-w-2xl mx-auto px-4">
           {/* Profile Picture Section */}
-          <div className="flex flex-col items-center py-8 border-b border-gray-700">
+          <div className="flex flex-col items-center py-8 border-b border-border">
             <div className="relative">
               <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden border-2 border-primary flex justify-center items-center bg-gray-700">
                 {profileImagePreview ? (
@@ -136,7 +136,7 @@ const EditProfile = () => {
             </div>
             <button
               onClick={() => document.getElementById("profileImage").click()}
-              className="mt-4 text-blue-500 font-semibold hover:text-blue-400"
+              className="mt-4 text-violet-500 font-semibold hover:text-blue-400"
             >
               Change Profile Photo
             </button>
@@ -146,7 +146,7 @@ const EditProfile = () => {
           <form onSubmit={handleSubmit} className="py-6 space-y-6">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Name
               </label>
               <input
@@ -155,13 +155,13 @@ const EditProfile = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Enter your name"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:shadow-md focus:shadow-purple-500/50  transition-all duration-300"
+                className="w-full bg-surface border  border-border rounded-lg px-4 py-3 text-text-secondary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
               />
             </div>
 
             {/* Username */}
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Username
               </label>
               <input
@@ -170,16 +170,16 @@ const EditProfile = () => {
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Enter your username"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:shadow-md focus:shadow-purple-500/50 transition-all duration-300"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-text-secondary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-text-muted mt-1">
                 Your username will be visible to others
               </p>
             </div>
 
             {/* Bio */}
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Bio
               </label>
               <textarea
@@ -188,9 +188,9 @@ const EditProfile = () => {
                 onChange={handleInputChange}
                 placeholder="Write something about yourself..."
                 rows="4"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:shadow-md focus:shadow-purple-500/50 transition-all duration-300 resize-none"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-text-secondary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-text-muted mt-1">
                 {formData.bio.length} / 150 characters
               </p>
             </div>
@@ -204,7 +204,7 @@ const EditProfile = () => {
       ${
         formData.gender === g
           ? "bg-primary text-white border-primary "
-          : "border-border text-gray-400 hover:border-primary hover:shadow-md hover:shadow-pink-500/30"
+          : "border-border text-gray-400 hover:border-primary "
       }`}
                 >
                   <input
@@ -225,7 +225,7 @@ const EditProfile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-brand-gradient text-white font-semibold py-3 px-6 rounded-lg  transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full cursor-pointer bg-primary text-white font-semibold py-3 px-6 rounded-lg  transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Updating Profile..." : "Save Changes"}
               </button>
