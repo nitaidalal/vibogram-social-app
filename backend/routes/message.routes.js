@@ -5,7 +5,8 @@ import {
     sendMessage,
     getConversations,
     getMessages,
-    deleteMessage
+    deleteMessage,
+    deleteConversation
 } from "../controllers/message.controller.js";
 
 const messageRouter = express.Router();
@@ -21,5 +22,8 @@ messageRouter.get("/:conversationId", authMiddleware, getMessages);
 
 // Delete a specific message
 messageRouter.delete("/:messageId", authMiddleware, deleteMessage);
+
+// Delete a conversation (for the requesting user only)
+messageRouter.delete("/conversations/:conversationId", authMiddleware, deleteConversation);
 
 export default messageRouter;
