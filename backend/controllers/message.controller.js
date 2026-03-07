@@ -37,7 +37,13 @@ export const sendMessage = async (req, res) => {
             });
         }
 
-        const messageType = imageUrl ? "image" : "text";
+        let messageType = "text";
+
+        if(content && imageUrl) {
+            messageType = "text_image";
+        } else if(imageUrl) {
+            messageType = "image";
+        }
 
         const newMessage = await Message.create({
             conversationId: conversation._id,
@@ -47,9 +53,9 @@ export const sendMessage = async (req, res) => {
             messageType
         });
 
-        // Update conversation's lastMessage & messages array
+        // Restore conversation for both parties and update lastMessage
         conversation.lastMessage = newMessage._id;
-        conversation.messages.push(newMessage._id);
+        conversation.deletedFor = []; // clear so both sender & receiver see the chat again
         await conversation.save();
 
         // Populate sender details for the response
@@ -74,7 +80,8 @@ export const getConversations = async (req, res) => {
         const userId = req.userId;
 
         const conversations = await Conversation.find({
-            participants: { $in: [userId] }
+            participants: { $in: [userId] },
+            deletedFor: { $nin: [userId] }   // hide conversations the user deleted
         })
             .populate("participants", "name username profileImage")
             .populate({
@@ -119,7 +126,13 @@ export const getMessages = async (req, res) => {
             return res.status(404).json({ message: "Conversation not found" });
         }
 
-        const messages = await Message.find({ conversationId })
+        // Only show messages sent after the user last cleared the conversation
+        const clearedAt = conversation.clearedAt?.get(userId.toString());
+        const messageQuery = clearedAt
+            ? { conversationId, createdAt: { $gt: clearedAt } }
+            : { conversationId };
+
+        const messages = await Message.find(messageQuery)
             .populate("sender", "name username profileImage")
             .sort({ createdAt: 1 });
 
@@ -151,6 +164,48 @@ export const getMessages = async (req, res) => {
     }
 };
 
+// ─── Delete Conversation (for me only) ──────────────────────────────────────
+export const deleteConversation = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { conversationId } = req.params;
+
+        const conversation = await Conversation.findOne({
+            _id: conversationId,
+            participants: { $in: [userId] } 
+        });
+
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        // Add this user to deletedFor if not already there
+        if (!conversation.deletedFor.map(id => id.toString()).includes(userId)) {
+            conversation.deletedFor.push(userId);
+        }
+
+        // Record the time of deletion so old messages stay hidden if they re-message later
+        conversation.clearedAt.set(userId, new Date());
+
+        // If all participants have deleted → permanently remove everything
+        const allDeleted = conversation.participants.every(
+            (p) => conversation.deletedFor.map(id => id.toString()).includes(p.toString())
+        );
+
+        if (allDeleted) {
+            await Message.deleteMany({ conversationId });
+            await Conversation.findByIdAndDelete(conversationId);
+        } else {
+            await conversation.save();
+        }
+
+        res.status(200).json({ message: "Conversation deleted" });
+    } catch (error) {
+        console.error("deleteConversation error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 // ─── Delete a Message ─────────────────────────────────────────────────────────
 export const deleteMessage = async (req, res) => {
     try {
@@ -175,9 +230,6 @@ export const deleteMessage = async (req, res) => {
             const prevMessage = await Message.findOne({ conversationId }).sort({ createdAt: -1 });
             conversation.lastMessage = prevMessage?._id || null;
         }
-        conversation.messages = conversation.messages.filter(
-            (id) => id.toString() !== messageId
-        );
         await conversation.save();
 
         // ── Real-time: notify the other participant ──
