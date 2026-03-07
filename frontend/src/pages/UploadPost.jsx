@@ -267,8 +267,8 @@ const UploadPost = ({ isStory = false }) => {
                   onChange={(e) => setCaption(e.target.value)}
                   placeholder={`Write a caption for your ${selectedType}...`}
                   rows="4"
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-4 py-3
-                           text-white placeholder-[var(--color-text-muted)] focus:outline-none 
+                  className="w-full bg-surface border border-border rounded-xl px-4 py-3
+                           text-text-primary placeholder:text-text-secondary focus:outline-none 
                            focus:border-purple-500 transition-colors resize-none"
                 />
               </div>}
