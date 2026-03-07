@@ -12,13 +12,22 @@ const conversationSchema = new Schema({
         ref: "Message",
         default: null
     },
-    messages: [
+    deletedFor: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Message"
+            ref: "User"
         }
-    ]
+    ],
+    // Tracks when each user last cleared/deleted the conversation
+    // Messages created before this timestamp are hidden for that user
+    clearedAt: {
+        type: Map,
+        of: Date,
+        default: {}
+    },
 }, { timestamps: true });
+
+conversationSchema.index({ participants: 1 }); // For efficient retrieval of conversations for a user
 
 const Conversation = model("Conversation", conversationSchema);
 export default Conversation;
