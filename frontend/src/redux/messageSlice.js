@@ -21,22 +21,34 @@ const messageSlice = createSlice({
     },
     addMessage: (state, action) => {
       state.messages.push(action.payload);
-      // Update lastMessage in conversations list
-      const idx = state.conversations.findIndex(
-        (c) => c._id === action.payload.conversationId,
-      );
-      if (idx !== -1) {
-        state.conversations[idx].lastMessage = action.payload;
-        // Move updated conversation to top
-        const [conv] = state.conversations.splice(idx, 1); //splice(idx,1)
-        state.conversations.unshift(conv); //meaning-> add to beginning of array
-      }
+      // conversation list update is handled by updateConversationLastMessage
     },
     removeMessage: (state, action) => {
       // action.payload = { messageId, conversationId }
       state.messages = state.messages.filter(
         (m) => m._id !== action.payload.messageId,
       );
+    },
+    updateConversationLastMessage: (state, action) => {
+      // action.payload = message — update lastMessage + bubble to top, without touching state.messages
+      const idx = state.conversations.findIndex(
+        (c) => c._id === action.payload.conversationId,
+      );
+      if (idx !== -1) {
+        state.conversations[idx].lastMessage = action.payload; //
+        const [conv] = state.conversations.splice(idx, 1);
+        state.conversations.unshift(conv);
+      }
+    },
+    removeConversation: (state, action) => {
+      // action.payload = conversationId
+      state.conversations = state.conversations.filter(
+        (c) => c._id !== action.payload,
+      );
+      if (state.selectedConversation?._id === action.payload) {
+        state.selectedConversation = null;
+        state.messages = [];
+      }
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
@@ -71,6 +83,8 @@ export const {
     setMessages,
     addMessage,
     removeMessage,
+    removeConversation,
+    updateConversationLastMessage,
     setLoading,
     addUnreadSender,
     removeUnreadSender,
