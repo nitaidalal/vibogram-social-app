@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import cloudinary from "../config/cloudinary.js";
 import bcrypt from "bcryptjs";
+import Notification from "../models/notification.model.js";
+import {io, getReceiverSocketId } from "../config/socket.js";
 
 export const getCurrentUser = async (req,res) => {
     try {
@@ -133,26 +135,45 @@ export const followUser = async (req, res) => {
         const isAlreadyFollowing = currentUser.following.includes(userIdToFollow);
 
         if (isAlreadyFollowing) {
-            // Unfollow
-            currentUser.following.pull(userIdToFollow);
-            userToFollow.followers.pull(currentUserId);
-            await currentUser.save();
-            await userToFollow.save();
-            return res.status(200).json({ 
-                message: "Unfollowed successfully", 
-                isFollowing: false
-            });
+          // Unfollow
+          currentUser.following.pull(userIdToFollow);
+          userToFollow.followers.pull(currentUserId);
+          await currentUser.save();
+          await userToFollow.save();
+          return res.status(200).json({
+            message: "Unfollowed successfully",
+            isFollowing: false,
+          });
         } else {
-            // Follow
-            currentUser.following.push(userIdToFollow);
-            userToFollow.followers.push(currentUserId);
-            await currentUser.save();
-            await userToFollow.save();
-            return res.status(200).json({ 
-                message: "Followed successfully", 
-                isFollowing: true
+          // Follow
+          currentUser.following.push(userIdToFollow);
+          userToFollow.followers.push(currentUserId);
+          await currentUser.save();
+          await userToFollow.save();
+
+
+          // Create a notification for the followed user
+          
+            const notification = await Notification.create({
+              recipient: userIdToFollow,
+              sender: currentUserId,
+              type: "follow",
+              message: `started following you!`,
             });
+            await notification.populate("sender recipient", "name username profileImage");
+            const receiverSocketId = getReceiverSocketId(userIdToFollow);
+            if (receiverSocketId) {
+              io.to(receiverSocketId).emit("newNotification", notification);
+            }
+          
+          return res.status(200).json({
+            message: "Followed successfully",
+            isFollowing: true,
+          });
         }
+
+
+        
     } catch (error) {
         console.error("Follow User Error:", error);
         return res.status(500).json({ message: "Follow user error", error });

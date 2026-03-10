@@ -2,6 +2,8 @@ import User from "../models/user.model.js";
 import Vibe from "../models/vibe.model.js";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs";
+import { io, getReceiverSocketId } from "../config/socket.js";
+import Notification from "../models/notification.model.js";
 
 export const uploadVibe = async (req, res) => {
   let filePath = null;
@@ -81,6 +83,7 @@ export const likeVibe = async (req, res) => {
         }
         // Check if user already liked the vibe
         const alreadyLiked = vibe.likes.some(like => like.toString() === userId);
+        console.log("Already liked:", alreadyLiked);
         if(alreadyLiked){
             vibe.likes.pull(userId);
         }else{
@@ -92,7 +95,31 @@ export const likeVibe = async (req, res) => {
             { path: "author", select: "name username profileImage" },
             { path: "comments.author", select: "name username profileImage" }
         ]);
-        return res.status(200).json({message:"Vibe liked successfully", vibe});
+
+        //Emit real time like update to all clients
+        io.emit("vibeLiked", { vibeId, likes: vibe.likes });
+
+        //create notification for vibe author if someone else liked their vibe
+        if(!alreadyLiked && vibe.author._id.toString() !== userId){
+          const notification  = await Notification.create({
+            recipient: vibe.author._id,
+            sender: userId,
+            type: "like",
+            vibe: vibe._id,
+            message: `liked your vibe`
+          })
+          await notification.populate([
+            { path: "sender", select: "name username profileImage" },
+            { path: "recipient", select: "name username profileImage" },
+            { path: "vibe", select: "mediaUrl caption" }
+          ]);
+          const receiverSocketId = getReceiverSocketId(vibe.author._id.toString());
+          if(receiverSocketId){
+            io.to(receiverSocketId).emit("newNotification", notification);
+          }
+        }
+
+        return res.status(200).json({message: alreadyLiked ? "Vibe unliked" : "Vibe liked", likes: vibe.likes});
         
     } catch (error) {
         console.error("Like Vibe Error:", error);
@@ -111,6 +138,7 @@ export const commentOnVibe = async (req,res) => {
         if(!vibe){
             return res.status(404).json({message:"Vibe not found"});
         }
+        
         const comment = {
             author: userId,
             content,
@@ -121,6 +149,31 @@ export const commentOnVibe = async (req,res) => {
             { path: "author", select: "name username profileImage" },
             { path: "comments.author", select: "name username profileImage" }
         ]);
+
+        //Emit real time comment update to all clients
+        io.emit("vibeCommented", { vibeId, comments: vibe.comments });
+
+        const user = await User.findById(userId);
+        //create notification for vibe author if someone else commented on their vibe
+        if(vibe.author._id.toString() !== userId){
+          const notification  = await Notification.create({
+            recipient: vibe.author._id,
+            sender: userId,
+            type: "comment",
+            vibe: vibe._id,
+            message: `commented on your vibe!`
+          });
+          await notification.populate([
+            { path: "sender", select: "name username profileImage" },
+            { path: "recipient", select: "name username profileImage" },
+            { path: "vibe", select: "mediaUrl caption" }
+          ]);
+          const receiverSocketId = getReceiverSocketId(vibe.author._id.toString());
+          if(receiverSocketId){
+            io.to(receiverSocketId).emit("newNotification", notification);
+          }
+        }
+
         return res.status(200).json({message:"Comment added successfully", vibe});
     } catch (error) {
         console.error("Comment Vibe Error:", error);

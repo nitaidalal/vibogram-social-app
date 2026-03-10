@@ -2,6 +2,8 @@ import cloudinary from "../config/cloudinary.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import fs from "fs";
+import {io, getReceiverSocketId} from "../config/socket.js";
+import Notification from "../models/notification.model.js";
 
 export const uploadPost = async (req, res) => {
     let filePath = null;
@@ -178,6 +180,30 @@ export const likePost = async (req, res) => {
             { path: "author", select: "name username profileImage" },
             { path: "comments.author", select: "name username profileImage" }
         ]);
+
+        //real time like update using socket.io
+        io.emit("postLiked", {postId, likes: post.likes});
+
+        //create notification for post like
+        if(!alreadyLiked && post.author._id.toString() !== req.userId){
+            const notification = await Notification.create({
+                recipient:post.author,
+                sender:req.userId,
+                type:"like",
+                post:post._id,
+                message: `liked your post`
+            })
+            await notification.populate([
+                { path: "sender", select: "name username profileImage" },
+                { path: "recipient", select: "name username profileImage" },
+                { path: "post", select: "mediaUrl caption mediaType" }
+            ]);
+            // Emit real-time notification to the recipient
+            const receiverSocketId = getReceiverSocketId(post.author._id.toString());
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("newNotification", notification);
+            }
+        }
         return res.status(200).json({message: alreadyLiked ? "Post unliked" : "Post liked", post});
     } catch (error) {
         console.error("Like Post Error:", error);
@@ -205,6 +231,36 @@ export const commentOnPost = async (req,res) => {
             { path: "author", select: "name username profileImage" },
             { path: "comments.author", select: "name username profileImage" }
         ]);
+
+        const user = await User.findById(req.userId);
+
+        //real time comment update using socket.io
+        io.emit("postCommented", {postId, comments: post.comments});
+
+        //create notification for post comment
+        if(post.author._id.toString() !== req.userId){
+            const notification = await Notification.create({
+                recipient:post.author,
+                sender:req.userId,
+                type:"comment",
+                post:post._id,
+                message: `commented on your post`
+            })
+
+            await notification.populate([
+                { path: "sender", select: "name username profileImage" },
+                { path: "recipient", select: "name username profileImage" },
+                { path: "post", select: "mediaUrl caption mediaType" }
+            ]);
+
+            // Emit real-time notification to the recipient
+            const receiverSocketId = getReceiverSocketId(post.author._id.toString());
+
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("newNotification", notification);
+            }
+        }
+
         return res.status(200).json({message: "Comment added", post});
     } catch (error) {
         console.error("Comment Post Error:", error);
