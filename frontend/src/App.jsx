@@ -17,6 +17,8 @@ import Story from './components/Story'
 import getSuggestedUsers from './hooks/getSuggestedUsers'
 import Messages from './pages/Messages'
 import useInitSocket from './hooks/useInitSocket'
+import Notifications from './pages/Notifications'
+import useGetNotifications from './hooks/useGetNotifications'
 import { useEffect } from 'react'
 
 const App = () => {
@@ -32,6 +34,7 @@ const App = () => {
   getSuggestedUsers();
   useGetCurrentUser();
   useInitSocket();
+  useGetNotifications();
   return (
     <>
       <Toaster
@@ -108,6 +111,7 @@ const App = () => {
           <Route path="/vibes" element={<Vibes />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Route>
       </Routes>
     </>

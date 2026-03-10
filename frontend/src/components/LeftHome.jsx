@@ -31,7 +31,10 @@ const LeftHome = () => {
   const { userData } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
   const { unreadSenders } = useSelector((state) => state.message);
-  const unreadCount = unreadSenders.length;
+  const unreadCount = unreadSenders?.length; 
+  const { unreadCount: notifCount } = useSelector((state) => state.notification);
+
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,9 +101,23 @@ const LeftHome = () => {
       label: "Notifications",
       path: "/notifications",
       icon: isActive("/notifications") ? (
-        <IoNotifications className="text-2xl" />
+        <div className="relative">
+          <IoNotifications className="text-2xl" />
+          {notifCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {notifCount > 9 ? "9+" : notifCount}
+            </span>
+          )}
+        </div>
       ) : (
-        <IoNotificationsOutline className="text-2xl" />
+        <div className="relative">
+          <IoNotificationsOutline className="text-2xl" />
+          {notifCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {notifCount > 9 ? "9+" : notifCount}
+            </span>
+          )}
+        </div>
       ),
     },
     {
