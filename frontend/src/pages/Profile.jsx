@@ -10,7 +10,7 @@ import { MdOutlineSlowMotionVideo } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { LuShare2 } from "react-icons/lu";
-import Navbar from '../components/navbar';
+import Navbar from '../components/Navbar';
 import Loader from '../components/Loader';
 import Follow from '../components/Resuable/Follow';
 import { BsBookmark } from "react-icons/bs";
