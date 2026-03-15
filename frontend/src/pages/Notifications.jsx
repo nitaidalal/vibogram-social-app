@@ -8,7 +8,6 @@ import { FaRegComment } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { MdDeleteOutline, MdDoneAll } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
-
 import {
   markAllRead,
   markOneRead,
@@ -102,8 +101,8 @@ const Notifications = () => {
   // ── Navigate on click ────────────────────────
   const handleNotificationClick = (notification) => {
     if (!notification.isRead) handleMarkOneRead(notification._id);
-    if (notification.post) navigate(`/profile/${notification.sender?.username}`);
-    else if (notification.vibe) navigate("/vibes");
+    if (notification.post) navigate(`/post/${notification.post._id}`);
+    else if (notification.vibe) navigate(`/vibe/${notification.vibe._id}`);
     else if (notification.type === "follow")
       navigate(`/profile/${notification.sender?.username}`);
   };
