@@ -10,7 +10,7 @@ import { FaUserLarge } from 'react-icons/fa6';
 
 const BASE = import.meta.env.VITE_BACKEND_URL;
 
-const ShareModal = ({ isOpen, onClose, contentType, contentId }) => {
+const ShareModal = ({ isOpen, onClose, contentType, contentId, profileLink }) => {
   const [composeSearch, setComposeSearch] = useState('');
   const [composeResults, setComposeResults] = useState([]);
   const [composeLoading, setComposeLoading] = useState(false);
@@ -87,7 +87,7 @@ const ShareModal = ({ isOpen, onClose, contentType, contentId }) => {
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-linear-to-r from-purple-500/10 to-pink-500/10">
           <h3 className="text-text-primary font-bold text-base">
-            Share {contentType.charAt(0).toUpperCase() + contentType.slice(1)} 
+            Share {contentType?.charAt(0).toUpperCase() + contentType?.slice(1)} 
           </h3>
           <button
             onClick={onClose}
