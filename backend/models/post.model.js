@@ -68,6 +68,8 @@ const postSchema = new Schema(
   { timestamps: true },
 );
 
+postSchema.index({ createdAt: -1, _id: -1 });
+
 const Post = model("Post",postSchema);
 export default Post;
 
