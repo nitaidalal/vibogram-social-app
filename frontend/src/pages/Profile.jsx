@@ -9,12 +9,14 @@ import { BsGrid3X3 } from "react-icons/bs";
 import { MdOutlineSlowMotionVideo } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
+import { LuShare2 } from "react-icons/lu";
 import Navbar from '../components/navbar';
 import Loader from '../components/Loader';
 import Follow from '../components/Resuable/Follow';
 import { BsBookmark } from "react-icons/bs";
 import Post from '../components/Post';
 import VibeCard from '../components/VibeCard';
+import ShareModal from '../components/ShareModal';
 
 
 const Profile = () => {
@@ -28,27 +30,31 @@ const Profile = () => {
   const listRef = useRef(null);
   const selectedItemRef = useRef(null);
   const { profileData, userData } = useSelector((state) => state.user);
+  const [showShare, setShowShare] = useState(false);
 
   const isOwnProfile = userData?.username === username;
 
-  const handleProfile = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profile/${username}`, { withCredentials: true });
-      dispatch(setProfileData(response.data.user));
-      console.log("Profile data loaded:", response.data.user.savedPosts);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load profile data");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    if (username) {
-      handleProfile();
-    }
-  }, [username]);
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/user/profile/${username}`,
+          { withCredentials: true },
+        );
+
+        dispatch(setProfileData(response.data.user));
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message || "Failed to load profile data",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (username) fetchProfile();
+  }, [username,dispatch]);
 
   // Scroll the viewer so the clicked post starts in view
   useEffect(() => {
@@ -101,7 +107,6 @@ const Profile = () => {
             {/* Profile Picture */}
             <div className="shrink-0">
               <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-full overflow-hidden border-3 border-fuchsia-500 flex justify-center items-center bg-gray-700">
-                
                 {profileData?.profileImage ? (
                   <img
                     src={profileData.profileImage}
@@ -126,7 +131,11 @@ const Profile = () => {
                 <p className="text-xl md:text-2xl font-bold">
                   {profileData?.followers?.length || 0}
                 </p>
-                <p className="text-sm text-gray-400">{profileData?.followers?.length <= 1 ? "Follower" : "Followers"}</p>
+                <p className="text-sm text-gray-400">
+                  {profileData?.followers?.length <= 1
+                    ? "Follower"
+                    : "Followers"}
+                </p>
               </div>
               <div className="cursor-pointer">
                 <p className="text-xl md:text-2xl font-bold">
@@ -141,7 +150,9 @@ const Profile = () => {
           <div className="mb-4">
             <h2 className="font-semibold text-lg">{profileData?.name}</h2>
             {profileData?.bio && (
-              <p className="text-sm text-text-secondary mt-1">{profileData.bio}</p>
+              <p className="text-sm text-text-secondary mt-1 whitespace-pre-line wrap-break-word">
+                {profileData.bio}
+              </p>
             )}
           </div>
 
@@ -155,17 +166,34 @@ const Profile = () => {
                 >
                   Edit Profile
                 </button>
-                <button className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                <button
+                  onClick={() => setShowShare(true)}
+                  className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                >
                   Share Profile
                 </button>
               </>
             ) : (
               <>
-                <Follow userId={profileData?._id} location="profile" onFollowChange={handleProfile} />
+                <Follow
+                  userId={profileData?._id}
+                  location="profile"
+                  onFollowChange={handleProfile}
+                />
                 <button
-                  onClick={() => navigate('/messages', { state: { user: profileData } })}
-                  className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                  onClick={() =>
+                    navigate("/messages", { state: { user: profileData } })
+                  }
+                  className="flex-1 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                >
                   Message
+                </button>
+                <button
+                  onClick={() => setShowShare(true)}
+                  className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center"
+                  title="Share Profile"
+                >
+                  <LuShare2 className="text-lg" />
                 </button>
               </>
             )}
@@ -201,19 +229,20 @@ const Profile = () => {
                 VIBES
               </span>
             </button>
-            {isOwnProfile && (<button
-              onClick={() => setActiveTab("saved")}
-              className={`flex-1 py-3 flex items-center justify-center gap-2 border-t-2 cursor-pointer ${
-                activeTab === "saved"
-                  ? "border-accent text-text-primary"
-                  : "border-transparent text-gray-400"
-              } transition-colors`}
-            >
-              <BsBookmark className="text-xl" />
-              <span className="text-sm font-semibold hidden sm:inline">
-                SAVED
-              </span>
-            </button>
+            {isOwnProfile && (
+              <button
+                onClick={() => setActiveTab("saved")}
+                className={`flex-1 py-3 flex items-center justify-center gap-2 border-t-2 cursor-pointer ${
+                  activeTab === "saved"
+                    ? "border-accent text-text-primary"
+                    : "border-transparent text-gray-400"
+                } transition-colors`}
+              >
+                <BsBookmark className="text-xl" />
+                <span className="text-sm font-semibold hidden sm:inline">
+                  SAVED
+                </span>
+              </button>
             )}
           </div>
         </div>
@@ -230,7 +259,7 @@ const Profile = () => {
                       key={index}
                       className="aspect-square bg-gray-800 cursor-pointer hover:opacity-75 transition-opacity flex items-center justify-center overflow-hidden relative"
                       onClick={() => {
-                        setSelectedSource('posts');
+                        setSelectedSource("posts");
                         setSelectedPostIndex(index);
                       }}
                     >
@@ -270,7 +299,7 @@ const Profile = () => {
                       key={index}
                       onClick={() => {
                         setSelectedPostIndex(index);
-                        setSelectedSource("vibes")
+                        setSelectedSource("vibes");
                       }}
                       className="aspect-square bg-gray-800 cursor-pointer hover:opacity-75 transition-opacity flex items-center justify-center overflow-hidden relative"
                     >
@@ -302,7 +331,7 @@ const Profile = () => {
                       key={index}
                       className="aspect-square bg-gray-800 cursor-pointer hover:opacity-75 transition-opacity flex items-center justify-center overflow-hidden relative"
                       onClick={() => {
-                        setSelectedSource('saved');
+                        setSelectedSource("saved");
                         setSelectedPostIndex(index);
                       }}
                     >
@@ -325,7 +354,9 @@ const Profile = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                   <BsBookmark className="text-6xl mb-4" />
-                  <p className="text-xl font-semibold mb-2">No Saved Posts Yet</p>
+                  <p className="text-xl font-semibold mb-2">
+                    No Saved Posts Yet
+                  </p>
                   <p className="text-sm">
                     When you save posts, they'll appear here.
                   </p>
@@ -362,7 +393,7 @@ const Profile = () => {
                   key={item._id || idx}
                   ref={idx === selectedPostIndex ? selectedItemRef : null}
                 >
-                  {selectedSource === 'vibes' ? (
+                  {selectedSource === "vibes" ? (
                     <VibeCard vibe={item} />
                   ) : (
                     <Post post={item} />
@@ -377,6 +408,15 @@ const Profile = () => {
       <div className="lg:hidden flex items-center justify-center">
         <Navbar />
       </div>
+
+      {showShare && (
+        <ShareModal
+          isOpen={showShare}
+          onClose={() => setShowShare(false)}
+          contentType="profile"
+          contentId={profileData?._id}
+        />
+      )}
     </div>
   );
 }
