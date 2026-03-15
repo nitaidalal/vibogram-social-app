@@ -15,11 +15,27 @@ import { app, server } from './config/socket.js';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://vibely-social-media-app.vercel.app",
+  ...(process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(",").map((origin) => origin.trim())
+    : []),
+].map((origin) => origin.replace(/\/$/, ""));
 
 //built-in middlewares
 app.use(
   cors({
-    origin: "https://vibely-social-media-app.vercel.app/",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      const normalizedOrigin = origin.replace(/\/$/, "");
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
