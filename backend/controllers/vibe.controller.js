@@ -196,3 +196,18 @@ export const getAllVibes = async (req,res) => {
         return res.status(500).json({message:"Get all vibes error", error});
     }
 }
+
+export const getVibeById = async (req, res) => {
+    try {
+        const { vibeId } = req.params;
+        const vibe = await Vibe.findById(vibeId).populate([
+            { path: "author", select: "name username profileImage" },
+            { path: "comments.author", select: "name username profileImage" }
+        ]);
+        if (!vibe) return res.status(404).json({ message: "Vibe not found" });
+        return res.status(200).json({ vibe });
+    } catch (error) {
+        console.error("Get Vibe By ID Error:", error);
+        return res.status(500).json({ message: "Failed to fetch vibe", error: error.message });
+    }
+}
