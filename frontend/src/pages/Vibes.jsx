@@ -69,7 +69,7 @@ const Vibes = () => {
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500"></div>
           </div>
         ) : vibes.length > 0 ? (
-          <div className=" h-screen w-full  max-w-md mx-auto">
+          <div className=" h-screen w-full  max-w-[400px] mx-auto">
             {vibes.map((vibe) => (
               <VibeCard key={vibe._id} vibe={vibe} refreshVibes={getAllVibes} />
             ))}

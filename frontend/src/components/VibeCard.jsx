@@ -9,27 +9,29 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiSend } from "react-icons/fi";
 import { FaRegComment } from "react-icons/fa";
-
-
+import ShareModal from './ShareModal';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 
 const VibeCard = ({
   vibe,
   refreshVibes,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
+  const { userData } = useSelector((state) => state.user);
+  const [isLiked, setIsLiked] = useState(() => vibe?.likes?.includes(userData?._id) || false);
+  const [likesCount, setLikesCount] = useState(() => vibe?.likes?.length || 0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(() => {
-    const savedMuteState = localStorage.getItem('vibesMuted');
-    return savedMuteState === null ? true : savedMuteState === 'true'; //
+    const savedMuteState = localStorage.getItem("vibesMuted");
+    return savedMuteState === null ? true : savedMuteState === "true"; // savedMuteState === null ? true -> default to muted if no preference is saved
   });
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState(() => vibe?.comments || []);
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
   const videoRef = useRef(null);
   const dispatch = useDispatch();
-  const { userData } = useSelector((state) => state.user);
+  const [showShare, setShowShare] = useState(false)
+
 
 
   useEffect(() => {
@@ -56,20 +58,13 @@ const VibeCard = ({
   }, [])
 
   useEffect(() => {
-    if (vibe) {
-      setIsLiked(vibe.likes?.includes(userData?._id));
-      setLikesCount(vibe.likes?.length || 0);
-      setComments(vibe.comments || []);
-      
-      // Auto-play video when component mounts or vibe changes
-      if (videoRef.current) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      }
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
-  }, [vibe, userData]);
+  }, [vibe]);
 
-  const handleLike = async (isDoubleClick = false) =>{
+  const handleLike = async () =>{
 
     try {
       const response = await axios.post(
@@ -153,7 +148,7 @@ const VibeCard = ({
 
 
   return (
-    <div className="relative w-full h-screen snap-start bg-black">
+    <div className="relative h-screen w-full snap-start bg-black ">
       {/* Video */}
       <video
         ref={videoRef}
@@ -196,7 +191,7 @@ const VibeCard = ({
       )}
 
       {/* Bottom Gradient Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 pb-10">
+      <div className="absolute bottom-0 left-0 right-0 p-3 pb-10">
         {/* Author Info */}
         <div className="flex items-center gap-3 mb-3">
           <img
@@ -244,13 +239,13 @@ const VibeCard = ({
             </span>
           </button>
 
-          <button>
+          <button onClick={() => setShowShare(true)}>
             <FiSend size={22} className="text-green-500 hover:text-green-600" />
           </button>
         </div>
       </div>
 
-      <div className="absolute bottom-20 right-4">
+      <div className="absolute bottom-20 right-8">
         <button
           onClick={toggleMute}
           className="flex flex-col items-center gap-1 hover:scale-110 transition-transform cursor-pointer"
@@ -266,10 +261,10 @@ const VibeCard = ({
       {/* Comments Modal */}
       {showComments && (
         <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        exit={{ opacity: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col"
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
@@ -311,7 +306,9 @@ const VibeCard = ({
                       <p className="font-semibold  text-sm">
                         {comment.author?.name}
                       </p>
-                      <p  className= "px-2.5 py-1.5 border border-purple-500 bg-purple-500/15 rounded-full text-gray-400 text-xs">{moment(comment.createdAt).fromNow()}</p>
+                      <p className="px-2.5 py-1.5 border border-purple-500 bg-purple-500/15 rounded-full text-gray-400 text-xs">
+                        {moment(comment.createdAt).fromNow()}
+                      </p>
                     </div>
                     <p className="text-gray-300 text-sm">{comment.content}</p>
                   </div>
@@ -342,6 +339,14 @@ const VibeCard = ({
             </button>
           </form>
         </motion.div>
+      )}
+      {showShare && (
+        <ShareModal
+          contentId={vibe._id}
+          contentType="vibe"
+          onClose={() => setShowShare(false)}
+          isOpen={showShare}
+        />
       )}
     </div>
   );
