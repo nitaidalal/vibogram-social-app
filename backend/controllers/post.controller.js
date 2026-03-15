@@ -100,14 +100,55 @@ export const uploadPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find({})
+        const limit = parseInt(req.query.limit) || 10;
+        const { cursor } = req.query;
+        
+        const query = {}; // Fetch all posts, pagination will be handled by cursor and limit
+
+        if (cursor) {
+            const cursorPost = await Post.findById(cursor).select("_id createdAt");
+            if (!cursorPost) {
+                return res.status(400).json({ message: "Invalid cursor" });
+            }
+
+            query.$or = [ 
+                { createdAt: { $lt: cursorPost.createdAt } },
+                { createdAt: cursorPost.createdAt, _id: { $lt: cursorPost._id } }
+            ];
+        }
+
+        const posts = await Post.find(query)
             .populate("author", "name username profileImage")
             .populate("comments.author", "name username profileImage")
-            .sort({ createdAt: -1 });
-        // console.log("Fetched Posts:", posts);
-        res.status(200).json({ posts });
+            .sort({ createdAt: -1, _id: -1 })
+            .limit(limit + 1);
+
+        const hasMore = posts.length > limit;
+        const paginatedPosts = hasMore ? posts.slice(0, limit) : posts;
+        const nextCursor = hasMore
+            ? paginatedPosts[paginatedPosts.length - 1]?._id?.toString()
+            : null;
+
+        res.status(200).json({
+            posts: paginatedPosts,
+            nextCursor,
+            hasMore,
+        });
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch posts", error: error.message });
+    }
+}
+
+export const getPostById = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findById(postId)
+            .populate("author", "name username profileImage")
+            .populate("comments.author", "name username profileImage");
+        if (!post) return res.status(404).json({ message: "Post not found" });
+        res.status(200).json({ post });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch post", error: error.message });
     }
 }
 
