@@ -19,6 +19,8 @@ import Messages from './pages/Messages'
 import useInitSocket from './hooks/useInitSocket'
 import Notifications from './pages/Notifications'
 import useGetNotifications from './hooks/useGetNotifications'
+import PostPage from './pages/PostPage'
+import VibePage from './pages/VibePage'
 import { useEffect } from 'react'
 
 const App = () => {
@@ -112,6 +114,8 @@ const App = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/post/:postId" element={<PostPage />} />
+          <Route path="/vibe/:vibeId" element={<VibePage />} />
         </Route>
       </Routes>
     </>
