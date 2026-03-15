@@ -58,10 +58,10 @@ const EditProfile = () => {
       setLoading(true)
       const formDataToSend = new FormData()
       
-      if (formData.name) formDataToSend.append('name', formData.name)
-      if (formData.username) formDataToSend.append('username', formData.username)
-      if (formData.bio) formDataToSend.append('bio', formData.bio)
-      if (formData.gender) formDataToSend.append('gender', formData.gender)
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('username', formData.username)
+      formDataToSend.append('bio', formData.bio)
+      formDataToSend.append('gender', formData.gender)
       if (profileImage) formDataToSend.append('profileImage', profileImage)
 
       const response = await axios.put(
@@ -88,7 +88,7 @@ const EditProfile = () => {
  
 
   return (
-    <div className="min-h-screen bg-bg flex justify-center sm:ml-[72px] lg:ml-[240px]">
+    <div className="min-h-screen bg-bg flex justify-center sm:ml-18 lg:ml-60">
       <div className="w-full max-w-2xl bg-surface border border-border rounded-2xl shadow-2xl shadow-purple-900/20 hover:shadow-purple-600/40 hover:shadow-2xl transition-shadow duration-300">
         {/* Header */}
         <div className="sticky top-0 z-40 bg-surface-hover border-b border-border px-6 py-4 rounded-t-2xl">
