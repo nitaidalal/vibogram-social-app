@@ -27,7 +27,7 @@ const VibePage = () => {
   }, [vibeId])
 
   return (
-    <div className="sm:ml-[72px] lg:ml-[240px]  h-screen  overflow-hidden relative bg-black">
+    <div className="sm:ml-[72px] lg:ml-[240px]  h-screen  overflow-hidden relative bg-bg">
       {/* Floating back button over the video */}
       <button
         onClick={() => navigate(-1)}

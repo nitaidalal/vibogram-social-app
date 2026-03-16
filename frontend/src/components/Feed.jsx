@@ -79,7 +79,7 @@ const Feed = () => {
         <div className="flex">
           <img src="/logo.png" alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
           <span className="text-primary text-2xl sm:text-3xl font-bold">
-            ynox
+            ibely
           </span>
         </div>
         <div className="flex items-center gap-6">
