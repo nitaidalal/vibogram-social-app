@@ -12,8 +12,6 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import {
   MdOutlineSlowMotionVideo,
   MdSlowMotionVideo,
-  MdOutlineExplore,
-  MdExplore,
 } from "react-icons/md";
 import { FaUserLarge } from "react-icons/fa6";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -72,15 +70,6 @@ const LeftHome = () => {
         <IoSearch className="text-2xl" />
       ) : (
         <IoSearchOutline className="text-2xl" />
-      ),
-    },
-    {
-      label: "Explore",
-      path: "/explore",
-      icon: isActive("/explore") ? (
-        <MdExplore className="text-2xl" />
-      ) : (
-        <MdOutlineExplore className="text-2xl" />
       ),
     },
     {
