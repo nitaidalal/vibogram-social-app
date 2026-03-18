@@ -78,7 +78,7 @@ const Feed = () => {
     <div className="w-full sm:ml-18 md:w-[calc(70%-72px)] lg:ml-60 lg:w-[calc(70%-240px)] sm:px-3 lg:px-4 min-h-screen bg-bg text-text-primary overflow-y-auto border-gray-700 relative">
       {/* Mobile Header */}
 
-      <div className="flex mx-6 sm:hidden justify-between items-center h-14">
+      <div className="fixed top-0 left-0 right-0 z-50 sm:hidden flex px-6 justify-between items-center h-14 bg-bg/95 backdrop-blur-md border-b border-border">
         <div className="flex">
           <img src="/logo.png" alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
           <span className="text-primary text-2xl sm:text-3xl font-bold">
@@ -109,7 +109,9 @@ const Feed = () => {
         </div>
       </div>
 
-      {/* ----------------------------
+       <div className="h-14 sm:hidden" />
+
+       {/* ----------------------------
            Stories Section
       ---------------------------- */}
 
