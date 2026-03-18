@@ -574,7 +574,7 @@ const Messages = () => {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-[calc(100vh-64px)] lg:h-[100vh] bg-bg">
+    <div className="flex h-[calc(100vh-120px)] sm:h-screen bg-bg">
       {/* ════ Compose Modal ════ */}
       {showCompose && (
         <div
