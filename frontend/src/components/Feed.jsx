@@ -10,6 +10,8 @@ import { fetchPostsIfNeeded, fetchMorePosts } from "../redux/postSlice";
 import { fetchStoriesIfNeeded } from "../redux/storySlice";
 import { useNavigate } from "react-router-dom";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import {IoNotificationsOutline } from "react-icons/io5";
+
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -24,6 +26,7 @@ const Feed = () => {
   );
 
   const { userData } = useSelector((state) => state.user);
+  const { unreadCount } = useSelector((state) => state.notification);
 
   const observer = useRef(null);
 
@@ -92,7 +95,17 @@ const Feed = () => {
             </div>
             <span className="text-[10px] mt-1 hidden sm:block">Create</span>
           </button>
-          <CiHeart className="text-4xl" />
+          <div
+           className="relative"
+           onClick={()=>navigate("/notifications")}
+           >
+            <IoNotificationsOutline className="text-2xl" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount>9? "9+" : unreadCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
