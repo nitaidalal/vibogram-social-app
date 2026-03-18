@@ -9,8 +9,11 @@ import Navbar from "./Navbar";
 import { fetchPostsIfNeeded, fetchMorePosts } from "../redux/postSlice";
 import { fetchStoriesIfNeeded } from "../redux/storySlice";
 import { useNavigate } from "react-router-dom";
-import { IoMdAddCircleOutline } from "react-icons/io";
+import { IoMdAdd } from "react-icons/io";
 import {IoNotificationsOutline } from "react-icons/io5";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
+import { toggleTheme } from "../redux/themeSlice";
+
 
 
 const Feed = () => {
@@ -27,6 +30,8 @@ const Feed = () => {
 
   const { userData } = useSelector((state) => state.user);
   const { unreadCount } = useSelector((state) => state.notification);
+  const { theme } = useSelector((state) => state.theme);
+
 
   const observer = useRef(null);
 
@@ -78,26 +83,35 @@ const Feed = () => {
     <div className="w-full sm:ml-18 md:w-[calc(70%-72px)] lg:ml-60 lg:w-[calc(70%-240px)] sm:px-3 lg:px-4 min-h-screen bg-bg text-text-primary overflow-y-auto border-gray-700 relative">
       {/* Mobile Header */}
 
-      <div className="flex mx-6 sm:hidden justify-between items-center h-14">
-        <div className="flex">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
-          <span className="text-primary text-2xl sm:text-3xl font-bold">
+      <div className="fixed top-0 left-0 right-0 z-50 sm:hidden flex px-4 justify-between items-center h-14 bg-bg/95 backdrop-blur-md border-b border-border">
+        <div className="flex items-center gap-0.5">
+          <img src="/logo.png" alt="Logo" className="h-8 w-8 rounded-lg" />
+          <span className="text-primary text-2xl font-extrabold tracking-tight">
             ibely
           </span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2.5">
+          <button
+          onClick={() => dispatch(toggleTheme())}
+          className="h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-surface hover:bg-surface-hover transition-colors"
+          >
+            {theme === "light" ? (
+              <HiOutlineMoon className="text-2xl" />
+            ) : (
+              <HiOutlineSun className="text-2xl text-yellow-500" />
+            )}
+          </button>
           <button
             onClick={() => navigate("/upload")}
-            className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+            className="h-9 w-9 flex items-center justify-center rounded-xl bg-brand-gradient text-white shadow-sm hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer"
+            title="Create post"
           >
-            <div className=" bg-white rounded-full p-0.5">
-              <IoMdAddCircleOutline className="text-xl sm:text-3xl text-purple-600 group-hover:text-pink-600 transition-colors" />
-            </div>
-            <span className="text-[10px] mt-1 hidden sm:block">Create</span>
+            <IoMdAdd className="text-2xl" />
           </button>
-          <div
-           className="relative"
+          <button
+           className="relative h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-surface hover:bg-surface-hover transition-colors"
            onClick={()=>navigate("/notifications")}
+           title="Notifications"
            >
             <IoNotificationsOutline className="text-2xl" />
             {unreadCount > 0 && (
@@ -105,11 +119,13 @@ const Feed = () => {
                 {unreadCount>9? "9+" : unreadCount}
               </span>
             )}
-          </div>
+          </button>
         </div>
       </div>
 
-      {/* ----------------------------
+       <div className="h-14 sm:hidden" />
+
+       {/* ----------------------------
            Stories Section
       ---------------------------- */}
 
