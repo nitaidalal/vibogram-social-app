@@ -16,6 +16,9 @@ import {
 } from "../redux/notificationSlice";
 import toast from "react-hot-toast";
 import axios from "axios";
+import Loader from "../components/Loader";
+
+
 
 const TYPE_META = {
   like: {
@@ -38,7 +41,7 @@ const TYPE_META = {
 const Notifications = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { notifications, unreadCount } = useSelector(
+  const { notifications, unreadCount, loading } = useSelector(
     (state) => state.notification
   );
   const [filter, setFilter] = useState("all"); // "all" | "unread"
@@ -174,7 +177,11 @@ const Notifications = () => {
         </div>
 
         {/* ── Content ── */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader />
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4 text-text-secondary">
             <div className="p-5 rounded-full bg-surface-hover">
               <IoNotificationsOutline className="text-5xl" />

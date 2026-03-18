@@ -5,6 +5,7 @@ const notificationSlice = createSlice({
     initialState: {
         notifications: [],
         unreadCount: 0,
+        loading: false,
     },
     reducers: {
         setNotifications: (state, action) => {
@@ -41,6 +42,10 @@ const notificationSlice = createSlice({
             state.notifications = [];
             state.unreadCount = 0;
         },
+        setLoading: (state, action) => {
+            state.loading = action.payload;
+        }
+
     },
 });
 
@@ -51,6 +56,7 @@ export const {
     markOneRead,
     removeNotification,
     clearAllNotifications,
+    setLoading,
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;
