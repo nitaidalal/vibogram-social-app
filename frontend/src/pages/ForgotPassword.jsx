@@ -1,207 +1,233 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import {ClipLoader} from "react-spinners";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 
 const ForgotPassword = () => {
-    const [step,setStep] = useState(1);
-    const [email,setEmail] = useState("");
-    const [otp,setOtp] = useState("");
-    const [newPassword,setNewPassword] = useState("");
-    const [confirmPassword,setConfirmPassword] = useState("");
-    const [loading,setLoading] = useState(false);
-    const [resendTimer, setResendTimer] = useState(0);
-    const [resendLoading, setResendLoading] = useState(false);
+  const navigate = useNavigate();
 
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    const handleSendOtp = async() => {
-      try {
-        setLoading(true);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });
-        toast.success(response.data.message);
-        setStep(2);
-        setResendTimer(30);
-        
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Failed to send Otp");
-      }finally{
-        setLoading(false);
-      }
+  const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+
+  const inputClassName =
+    "w-full rounded-xl border border-gray-600 bg-slate-900 px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500";
+
+  // 🔹 SEND OTP
+  const handleSendOtp = async () => {
+    if (!email) return toast.error("Email is required");
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`,
+        { email },
+      );
+      toast.success(res.data.message);
+      setStep(2);
+      setResendTimer(30);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const handleResendOtp = async() => {
-      if(resendTimer > 0) return;
-      try {
-        setResendLoading(true);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`, { email });
-        toast.success(response.data.message || 'OTP resent successfully');
-        setResendTimer(30);
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Failed to resend OTP");
-      } finally {
-        setResendLoading(false);
-      }
+  // 🔹 RESEND OTP
+  const handleResendOtp = async () => {
+    if (resendTimer > 0) return;
+
+    try {
+      setResendLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/send-otp`,
+        { email },
+      );
+      toast.success(res.data.message || "OTP resent");
+      setResendTimer(30);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to resend OTP");
+    } finally {
+      setResendLoading(false);
     }
+  };
 
-    const handleVerifyOtp = async () => {
-      try {
-        const response =  await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/verify-otp`, {
-          email,
-          otp,
-        });
-        
-        toast.success(response.data.message);
+  // 🔹 VERIFY OTP
+  const handleVerifyOtp = async () => {
+    if (!otp) return toast.error("Enter OTP");
 
-        setStep(3);
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Otp verificition error");
-      }
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/verify-otp`,
+        { email, otp },
+      );
+      toast.success(res.data.message);
+      setStep(3);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Invalid OTP");
     }
+  };
 
-    const handleResetPassword = async () => {
-      try {
-       
-        if(newPassword !== confirmPassword){
-          return toast.error("Passwords do not match");
-        }
-        setLoading(true);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,{email, newPassword});
-        toast.success( response.data.message);
+  // 🔹 RESET PASSWORD
+  const handleResetPassword = async () => {
+    if (!newPassword || !confirmPassword)
+      return toast.error("All fields required");
 
-        
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Otp verificition error");
-      }finally{
-        setLoading(false);
-      }
+    if (newPassword !== confirmPassword)
+      return toast.error("Passwords do not match");
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,
+        { email, newPassword },
+      );
+      toast.success(res.data.message);
+
+      // redirect after success
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Reset failed");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() => {
-      let interval;
-      if(resendTimer > 0) {
-        interval = setInterval(() => {
-          setResendTimer(prev => prev - 1);
-        }, 1000);
-      }
-      return () => clearInterval(interval);
-    }, [resendTimer]);
-    
+  // 🔹 TIMER
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center py-8">
-      <div className="w-[80%] max-w-md rounded-2xl p-8 lg:p-12 bg-slate-800 shadow-2xl">
-        {/* Step 1: Enter Email */}
-        {step == 1 && (
+    <div className="w-full min-h-screen flex flex-col justify-center items-center py-8 bg-black">
+      <div className="w-[90%] max-w-md rounded-2xl p-8 bg-slate-800 shadow-2xl">
+        {/* 🔙 Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white"
+        >
+          <FaArrowLeft /> Back
+        </button>
+
+        {/* STEP 1 */}
+        {step === 1 && (
           <div>
-            <h1 className="text-3xl font-bold text-white text-center mb-6">
-              Forgot Password
-            </h1>
-            
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-white mb-2"
-              >
-                Registered Email <span className=" text-red-500 ">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your registered email"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
-                required
-              />
-            </div>
+            <h1 className="text-3xl font-bold text-white">Forgot Password</h1>
+            <p className="text-gray-400 mt-2">
+              Enter your email to receive OTP
+            </p>
+
+            <input
+              type="email"
+              placeholder="Enter email"
+              className={`${inputClassName} mt-6`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200"
+              className="mt-6 w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg text-white font-semibold"
             >
-            {loading ? <ClipLoader size={20} color="#ffffff" /> : "Send OTP"}
+              {loading ? <ClipLoader size={20} color="#fff" /> : "Send OTP"}
             </button>
           </div>
         )}
 
-        {/* Step 2: Confirmation Message */}
-        {step == 2 && (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-6">OTP Sent ✅</h1>
-            <p className="text-white mb-4">
-              An OTP has been sent to your registered email address.
+        {/* STEP 2 */}
+        {step === 2 && (
+          <div>
+            <h1 className="text-3xl font-bold text-white">Verify OTP</h1>
+            <p className="text-gray-400 mt-2">
+              Enter the OTP sent to your email
             </p>
 
             <input
               type="text"
+              placeholder="Enter OTP"
+              className={`${inputClassName} mt-6`}
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="px-4 py-3 w-full  border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
-              placeholder="Enter your OTP"
             />
 
             <button
-              type="button"
               onClick={handleVerifyOtp}
-              className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200"
+              className="mt-6 w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg text-white font-semibold"
             >
               Verify OTP
             </button>
 
-            {/* Resend OTP */}
-            <div className="mt-4 flex items-center justify-center gap-2 text-sm">
-              <span className="text-gray-300">Didn't receive the OTP?</span>
+            <div className="mt-4 text-center text-sm text-gray-400">
+              Didn’t receive OTP?{" "}
               <button
                 onClick={handleResendOtp}
                 disabled={resendTimer > 0 || resendLoading}
-                className={`font-medium transition-colors ${
-                  resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-purple-400 hover:text-purple-300'
-                }`}
+                className="text-purple-400"
               >
-                {resendLoading ? (
-                  <ClipLoader size={14} color="#c084fc" />
-                ) : resendTimer > 0 ? (
-                  `Resend in ${resendTimer}s`
-                ) : (
-                  'Resend OTP'
-                )}
+                {resendLoading
+                  ? "Sending..."
+                  : resendTimer > 0
+                    ? `Resend in ${resendTimer}s`
+                    : "Resend"}
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 3: New password  */}
-        {step == 3 && (
+        {/* STEP 3 */}
+        {step === 3 && (
           <div>
-            <h1 className="text-3xl font-bold text-white text-center mb-10">
-              Reset Password
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Reset Password</h1>
 
             <input
               type="password"
+              placeholder="New Password"
+              className={`${inputClassName} mt-6`}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="px-4 py-3 w-full mb-4 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
-              placeholder="Enter new password"
             />
+
             <input
               type="password"
+              placeholder="Confirm Password"
+              className={`${inputClassName} mt-4`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="px-4 py-3 w-full border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
-              placeholder="Confirm new password"
             />
+
             <button
-            onClick={handleResetPassword}
-             className="w-full mt-6 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold cursor-pointer py-3 rounded-lg transition duration-200">
-              {loading ? <ClipLoader size={20} color="#ffffff" /> : "Reset Password"}
+              onClick={handleResetPassword}
+              disabled={loading}
+              className="mt-6 w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg text-white font-semibold"
+            >
+              {loading ? (
+                <ClipLoader size={20} color="#fff" />
+              ) : (
+                "Reset Password"
+              )}
             </button>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
 
-export default ForgotPassword
+export default ForgotPassword;

@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
@@ -19,6 +19,8 @@ const SignIn = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const inputClassName =
+    "w-full rounded-xl border border-border bg-bg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/70";
 
   const handleChange = (e) => {
     setFormData({
@@ -56,33 +58,44 @@ const SignIn = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center py-8">
-      <div className="w-[80%] max-w-md rounded-2xl p-8 lg:p-12 bg-linear-to-r from-slate-900 to-gray-900 shadow-2xl">
-        {/* Signup Form */}
-        <div>
-          <div className=" mb-8 text-center">
-            <div className="flex flex-col sm:flex-row items-center gap-2 justify-center mb-4">
-              <h1 className="text-3xl font-bold text-white ">Sign In To</h1>
-              <div className="flex items-center">
-                <img src="/logo.png" alt="" className="h-10 w-10 ml-2 pt-1" />
-                <span className="text-primary text-4xl font-bold ">
-                  ibogram
-                </span>
-              </div>
-            </div>
-          
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-bg px-4 py-10 md:px-8">
+      <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-brand-gradient opacity-20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-brand-gradient opacity-20 blur-3xl" />
+
+      <div className="relative mx-auto grid w-full max-w-6xl overflow-hidden    lg:grid-cols-2">
+        <div className="hidden  p-10 text-white lg:flex lg:flex-col lg:justify-center lg:items-center">
+          <div className="mb-10">
+            <h2 className="mb-3 text-5xl font-bold leading-tight">
+              Welcome back.
+            </h2>
+            <p className="text-sm/6 text-text-secondary">
+              Reconnect with your people, your stories, and your daily vibes.
+            </p>
+          </div>
+          <img
+            src="/banner.png"
+            alt="Social feed preview"
+            className="w-full rounded-2xl border border-white/30"
+          />
+        </div>
+
+        <div className="p-6 sm:p-10 lg:p-12  border border-border bg-surface rounded-3xl">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-text-primary">
+              Sign in
+            </h1>
+            <p className="mt-2 text-sm text-text-secondary">
+              Enter your details to continue.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
-
-            {/* Username Field */}
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-medium text-white mb-2"
+                className="mb-2 block text-sm font-medium text-text-primary"
               >
-                Username <span className=" text-red-500 ">*</span>
+                Username <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -90,23 +103,20 @@ const SignIn = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Enter yourusername"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+                placeholder="Enter your username"
+                className={inputClassName}
                 required
               />
             </div>
 
-           
-
-            {/* Password Field */}
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-white mb-2"
+                className="mb-2 block text-sm font-medium text-text-primary"
               >
-                Password <span className=" text-red-500 ">*</span>
+                Password <span className="text-danger">*</span>
               </label>
-              <div className="relative ">
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -114,46 +124,43 @@ const SignIn = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className=" w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+                  className={inputClassName}
                   required
                 />
-                <span
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-text-secondary transition hover:text-text-primary"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <FaEyeSlash size={20} />
-                  ) : (
-                    <FaEye size={20} />
-                  )}
-                </span>
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
               </div>
             </div>
 
-              
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-linear-to-r cursor-pointer from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="w-full cursor-pointer rounded-xl bg-brand-gradient py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {loading ? (
-                <ClipLoader color="#ffffff" size={30} />
-              ) : (
-                "Sign In"
-              )}
+              {loading ? <ClipLoader color="#ffffff" size={24} /> : "Sign In"}
             </button>
           </form>
-          <div className="mt-4 text-right text-sm text-gray-300 hover:underline cursor-pointer">
-            <p onClick={() => navigate("/forgot-password")}>Forgot Password?</p>
+
+          <div className="mt-4 text-right text-sm">
+            <p
+              onClick={() => navigate("/forgot-password")}
+              className="cursor-pointer text-text-secondary transition hover:text-primary"
+            >
+              Forgot Password?
+            </p>
           </div>
 
-          {/* Sign Up Link */}
-          <p className="text-center text-gray-200 mt-6">
-            Don't have an account?{" "}
+          <p className="mt-6 text-center text-sm text-text-secondary">
+            Don&apos;t have an account?{" "}
             <button
               onClick={() => navigate("/signup")}
-              className="text-purple-400 font-semibold hover:text-purple-300 transition duration-200 cursor-pointer"
+              className="cursor-pointer font-semibold text-primary transition hover:opacity-80"
             >
               Sign Up
             </button>
