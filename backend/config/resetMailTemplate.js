@@ -16,7 +16,7 @@ export const getResetPasswordOTPTemplate = (otp, username = "User") => {
               <!-- Logo / App Name -->
               <tr>
                 <td align="center" style="font-size:28px; font-weight:bold; color:#FFFFFF; padding-bottom:10px;">
-                  Vynox
+                  Vibely
                 </td>
               </tr>
   
@@ -31,7 +31,7 @@ export const getResetPasswordOTPTemplate = (otp, username = "User") => {
               <tr>
                 <td style="font-size:14px; color:#E5E7EB; padding-bottom:20px; text-align:center;">
                   Hi <strong>${username}</strong>,<br/>
-                  We received a request to reset your Vynox password.
+                  We received a request to reset your Vibely password.
                 </td>
               </tr>
   
@@ -77,7 +77,7 @@ export const getResetPasswordOTPTemplate = (otp, username = "User") => {
               <!-- Footer -->
               <tr>
                 <td style="font-size:12px; color:#6B7280; text-align:center; border-top:1px solid #2A2A35; padding-top:15px;">
-                  © ${new Date().getFullYear()} Vynox. All rights reserved.
+                  © ${new Date().getFullYear()} Vibely. All rights reserved.
                 </td>
               </tr>
   

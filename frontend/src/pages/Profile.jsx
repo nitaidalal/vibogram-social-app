@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProfileData } from '../redux/userSlice';
@@ -8,7 +8,6 @@ import { FaUserLarge } from "react-icons/fa6";
 import { BsGrid3X3 } from "react-icons/bs";
 import { MdOutlineSlowMotionVideo } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
 import { LuShare2 } from "react-icons/lu";
 import Navbar from '../components/Navbar';
 import Loader from '../components/Loader';
@@ -34,27 +33,27 @@ const Profile = () => {
 
   const isOwnProfile = userData?.username === username;
 
+  const handleProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/user/profile/${username}`,
+        { withCredentials: true },
+      );
+
+      dispatch(setProfileData(response.data.user));
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to load profile data",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, username]);
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/user/profile/${username}`,
-          { withCredentials: true },
-        );
-
-        dispatch(setProfileData(response.data.user));
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to load profile data",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (username) fetchProfile();
-  }, [username,dispatch]);
+    if (username) handleProfile();
+  }, [username, handleProfile]);
 
   // Scroll the viewer so the clicked post starts in view
   useEffect(() => {

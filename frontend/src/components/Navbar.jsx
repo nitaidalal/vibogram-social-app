@@ -1,63 +1,67 @@
 import React from 'react'
-import { GoHome, GoHomeFill } from "react-icons/go"
+import { GoHomeFill, GoHome } from "react-icons/go"
 import { IoSearchOutline } from "react-icons/io5"
-import { IoMdAddCircleOutline } from "react-icons/io"
 import { MdOutlineSlowMotionVideo } from "react-icons/md"
 import { FaUserLarge } from "react-icons/fa6"
+import { LuSend } from "react-icons/lu"
 import { useSelector } from "react-redux"
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+
 
 const Navbar = () => {
   const { userData } = useSelector((state) => state.user)
+  const { unreadSenders } = useSelector((state) => state.message)
+  const unreadCount = unreadSenders?.length
 
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <div className="sm:hidden w-[100%] sm:w-[90%] h-16 bg-gradient-to-r from-pink-500 to-fuchsia-500 border border-white/10 shadow-2xl backdrop-blur-sm text-white fixed bottom-2 sm:rounded-full flex justify-around items-center z-50 px-4">
+    <div className="sm:hidden w-full h-16 bg-surface/95 border-t border-border backdrop-blur-md text-text-primary fixed bottom-0 flex justify-around items-center z-50 px-4">
       {/* Home */}
       <button
         onClick={() => navigate("/")}
-        className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+        className={`flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${isActive("/") ? "text-primary" : "text-text-secondary hover:text-text-primary"}`}
       >
-        <GoHomeFill className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
-        <span className="text-[10px] mt-1 hidden sm:block">Home</span>
+        {isActive("/") ? <GoHomeFill className="text-2xl" /> : <GoHome className="text-2xl" />}
       </button>
 
       {/* Search */}
       <button
         onClick={() => navigate("/search")}
-        className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+        className={`flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${isActive("/search") ? "text-primary" : "text-text-secondary hover:text-text-primary"}`}
       >
-        <IoSearchOutline className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
-        <span className="text-[10px] mt-1 hidden sm:block">Search</span>
+        <IoSearchOutline className="text-2xl" />
       </button>
 
-      {/* Add/Create */}
+      {/* Messages */}
       <button
-        onClick={() => navigate("/upload")}
-        className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+        onClick={() => navigate("/messages")}
+        className={`relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${isActive("/messages") ? "text-primary" : "text-text-secondary hover:text-text-primary"}`}
       >
-        <div className=" bg-white rounded-full p-0.5">
-          <IoMdAddCircleOutline className="text-xl sm:text-3xl text-purple-600 group-hover:text-pink-600 transition-colors" />
-        </div>
-        <span className="text-[10px] mt-1 hidden sm:block">Create</span>
+        <LuSend className="text-2xl" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
       </button>
 
       {/* Vibes */}
       <button
         onClick={() => navigate("/vibes")}
-        className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+        className={`flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${isActive("/vibes") ? "text-primary" : "text-text-secondary hover:text-text-primary"}`}
       >
-        <MdOutlineSlowMotionVideo className="text-2xl sm:text-3xl group-hover:text-yellow-300 transition-colors" />
-        <span className="text-[10px] mt-1 hidden sm:block">Vibes</span>
+        <MdOutlineSlowMotionVideo className="text-2xl" />
       </button>
 
       {/* Profile */}
       <button
         onClick={() => navigate(`/profile/${userData?.username}`)}
-        className="flex flex-col items-center justify-center hover:scale-110 transition-transform duration-200 group cursor-pointer"
+        className="flex flex-col items-center justify-center transition-all duration-200 cursor-pointer"
       >
-        <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-white group-hover:border-yellow-300 transition-colors flex justify-center items-center bg-gray-700">
+        <div className={`h-8 w-8 rounded-full overflow-hidden border-2 ${isActive(`/profile/${userData?.username}`) ? "border-primary" : "border-border"} flex justify-center items-center bg-surface-hover transition-colors`}>
           {userData && userData.profileImage ? (
             <img
               src={userData.profileImage}
@@ -65,10 +69,9 @@ const Navbar = () => {
               className="object-cover h-full w-full"
             />
           ) : (
-            <FaUserLarge className="text-white text-sm" />
+            <FaUserLarge className="text-text-secondary text-sm" />
           )}
         </div>
-        <span className="text-[10px] mt-1 hidden sm:block">Profile</span>
       </button>
     </div>
   );

@@ -148,7 +148,7 @@ const VibeCard = ({
 
 
   return (
-    <div className="relative h-screen w-full snap-start bg-black ">
+    <div className="relative h-[calc(100dvh-4rem)] sm:h-screen w-full snap-start bg-black">
       {/* Video */}
       <video
         ref={videoRef}
@@ -191,7 +191,7 @@ const VibeCard = ({
       )}
 
       {/* Bottom Gradient Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 pb-10">
+      <div className="absolute bottom-0 left-0 right-0 p-3  sm:pb-10">
         {/* Author Info */}
         <div className="flex items-center gap-3 mb-3">
           <img

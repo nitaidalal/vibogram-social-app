@@ -8,9 +8,17 @@ import Navbar from "./Navbar";
 
 import { fetchPostsIfNeeded, fetchMorePosts } from "../redux/postSlice";
 import { fetchStoriesIfNeeded } from "../redux/storySlice";
+import { useNavigate } from "react-router-dom";
+import { IoMdAdd } from "react-icons/io";
+import {IoNotificationsOutline } from "react-icons/io5";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
+import { toggleTheme } from "../redux/themeSlice";
+
+
 
 const Feed = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { posts, isLoading, isFetchingMore, hasMore } = useSelector(
     (state) => state.post,
@@ -22,6 +30,9 @@ const Feed = () => {
   );
 
   const { userData } = useSelector((state) => state.user);
+  const { unreadCount } = useSelector((state) => state.notification);
+  const { theme } = useSelector((state) => state.theme);
+
 
   const observer = useRef(null);
 
@@ -73,18 +84,49 @@ const Feed = () => {
     <div className="w-full sm:ml-18 md:w-[calc(70%-72px)] lg:ml-60 lg:w-[calc(70%-240px)] sm:px-3 lg:px-4 min-h-screen bg-bg text-text-primary overflow-y-auto border-gray-700 relative">
       {/* Mobile Header */}
 
-      <div className="flex mx-6 sm:hidden justify-between items-center h-14">
-        <div className="flex">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
-          <span className="text-primary text-2xl sm:text-3xl font-bold">
-            ynox
+      <div className="fixed top-0 left-0 right-0 z-50 sm:hidden flex px-4 justify-between items-center h-14 bg-bg/95 backdrop-blur-md border-b border-border">
+        <div className="flex items-center gap-0.5">
+          <img src="/logo.png" alt="Logo" className="h-8 w-8 rounded-lg" />
+          <span className="text-primary text-2xl font-extrabold tracking-tight">
+            ibely
           </span>
         </div>
-
-        <CiHeart className="text-4xl" />
+        <div className="flex items-center gap-2.5">
+          <button
+          onClick={() => dispatch(toggleTheme())}
+          className="h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-surface hover:bg-surface-hover transition-colors"
+          >
+            {theme === "light" ? (
+              <HiOutlineMoon className="text-2xl" />
+            ) : (
+              <HiOutlineSun className="text-2xl text-yellow-500" />
+            )}
+          </button>
+          <button
+            onClick={() => navigate("/upload")}
+            className="h-9 w-9 flex items-center justify-center rounded-xl bg-brand-gradient text-white shadow-sm hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer"
+            title="Create post"
+          >
+            <IoMdAdd className="text-2xl" />
+          </button>
+          <button
+           className="relative h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-surface hover:bg-surface-hover transition-colors"
+           onClick={()=>navigate("/notifications")}
+           title="Notifications"
+           >
+            <IoNotificationsOutline className="text-2xl" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount>9? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* ----------------------------
+       <div className="h-14 sm:hidden" />
+
+       {/* ----------------------------
            Stories Section
       ---------------------------- */}
 

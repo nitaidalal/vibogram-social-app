@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import VibeCard from '../components/VibeCard';
-import Navbar from '../components/Navbar';
 import { IoArrowBack } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,26 +49,26 @@ const Vibes = () => {
   };
 
   return (
-    <div className=" h-screen bg-bg text-text-primary overflow-hidden relative sm:ml-[72px] lg:ml-[240px]">
+    <div className="h-dvh bg-bg text-text-primary overflow-hidden relative sm:ml-[72px] lg:ml-[240px]">
       {/* Header */}
       <div className="absolute top-0 left-0 z-20 flex items-center justify-between p-4 ">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="flex items-center gap-2 text-text-primary hover:text-purple-400 transition-colors"
         >
           <IoArrowBack className="text-2xl" />
         </button>
-    
       </div>
 
       {/* Vibes Content */}
-      <div className="w-full h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide ">
+      <div className="h-full w-full overflow-y-auto snap-y snap-mandatory scrollbar-hide flex justify-center">
+        {" "}
         {loading ? (
           <div className="flex justify-center items-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500"></div>
           </div>
         ) : vibes.length > 0 ? (
-          <div className=" h-screen w-full  max-w-[400px] mx-auto">
+          <div className="w-full max-w-[420px] ">
             {vibes.map((vibe) => (
               <VibeCard key={vibe._id} vibe={vibe} refreshVibes={getAllVibes} />
             ))}
@@ -82,11 +81,6 @@ const Vibes = () => {
             </p>
           </div>
         )}
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="absolute sm:hidden bottom-0  right-0 z-20">
-        <Navbar />
       </div>
     </div>
   );

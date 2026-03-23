@@ -157,7 +157,7 @@ const UploadPost = ({ isStory = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-bg py-8 px-4 sm:ml-[72px] lg:ml-[240px]">
+    <div className="min-h-screen mb-[64px] bg-bg py-8 px-4 sm:ml-[72px] lg:ml-[240px]">
       <div className="max-w-4xl mx-auto">
         
         {/* Back Button */}
